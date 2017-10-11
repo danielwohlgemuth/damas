@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author daniel
  */
-public class Damas {
+public class Main {
 
     /**
      * @param args the command line arguments

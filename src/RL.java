@@ -10,8 +10,8 @@
  */
 public class RL implements Jugador {
     @Override
-    public void mover() {
-        
+    public int[][] mover(int[][] tablero) {
+        return new int[1][1];
     }
     
 }

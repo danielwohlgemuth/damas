@@ -27,8 +27,6 @@ public class Random implements Jugador {
 //            Tablero.printTablero(posiblesTableros.get(i));
 //        }
 
-        int[][] tableroNuevo = posiblesTableros.get((int)(Math.random() * posiblesTableros.size()));
-
-        return tableroNuevo;
+        return posiblesTableros.get((int)(Math.random() * posiblesTableros.size()));
     }
 }
