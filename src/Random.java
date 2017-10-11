@@ -14,7 +14,7 @@ public class Random implements Jugador {
 
     private int jugador;
 
-    public Random(int jugador) {
+    Random(int jugador) {
         this.jugador = jugador;
     }
 

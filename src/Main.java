@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 
-import java.util.ArrayList;
-
 /**
  *
  * @author daniel
@@ -25,7 +23,7 @@ public class Main {
         jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
 
         int turno = 0;
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 10; i++) {
             tablero = jugadores[turno].mover(tablero);
             Tablero.printTablero(tablero);
             turno = (turno + 1) % 2;
