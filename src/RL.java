@@ -37,18 +37,18 @@ public class RL implements Jugador {
         this.jugador = jugador;
     }
 
-    @Override
-    public void resetear(boolean entrenar) {
-        this.entrenar = entrenar;
-        ultimoTablero = t.tablero;
-    }
-
-    @Override
-    public void finalizar() {
-        if(t.estado != jugador && entrenar) {//perdimos, actualizar tablero
-            updateProbability(ultimoTablero, calculateReward(t.tablero, jugador), jugador);
-        }
-    }
+//    @Override
+//    public void resetear(boolean entrenar) {
+//        this.entrenar = entrenar;
+//        ultimoTablero = t.tablero;
+//    }
+//
+//    @Override
+//    public void finalizar() {
+//        if(t.estado != jugador && entrenar) {//perdimos, actualizar tablero
+//            updateProbability(ultimoTablero, calculateReward(t.tablero, jugador), jugador);
+//        }
+//    }
 
 //        return this.t.estado;
         //0:gana negro
@@ -62,105 +62,109 @@ public class RL implements Jugador {
 //        Continua para el resto
 //    }
 
-    @Override
-    public void mover() {
-
-        double prob;
-        int[][] tableroCandidato = null;
-        double maxProb = Integer.MIN_VALUE;
-        double q;
-
-        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(t, jugador);
-
-        if (t.estado == Tablero.JUEGO_CONTINUA) {
-
-            q = Math.random();
-            //entrenar
-            if (q <= qRate || !entrenar) {
-                for (int[][] posibleTablero : posiblesTableros) {
-                    prob = calculateReward(posibleTablero, jugador);
-                    if (prob > maxProb) {
-                        maxProb = prob;
-                        tableroCandidato = posibleTablero;
-                    }
-                }
-
-            } else {
-                tableroCandidato = posiblesTableros.get((int) (Math.random() * posiblesTableros.size()));
-            }
-
-            if (entrenar) {
-                updateProbability(ultimoTablero, maxProb, jugador);
-            }
-
-            //aplicar jugada
-            ultimoTablero = t.tablero;
-            t.tablero = tableroCandidato;
-
-            // Gano el jugador
-        } else if (t.estado == jugador) {
-            updateProbability(ultimoTablero, 1.0, jugador);
-            // Gano el oponente
-        } else {
-            updateProbability(ultimoTablero, 0.0, jugador);
-        }
-//        t.imprimirTablero();
+    public int[][] mover(int[][] tablero) {
+        return new int[1][1];
     }
 
-    private double calculateReward(int[][] tablero, int jugador) {
-
-        int oponente = (jugador + 1) % 2;
-
-        int estadoAnterior = t.estado;
-        Tablero.generarMovimientos(t, jugador);
-//        int result = calculateResult(tablero);
-        int result = t.estado;
-        t.estado = estadoAnterior;
-
-        // Gano el jugador
-        if (result == jugador) {
-            return 1.0;
-            // Gano el oponente
-        } else if (result == oponente) {
-            return 0.0;
-            // No hay ganador
-        } else {
-            return getProbability(tablero);
-        }
-    }
-
-    private double getProbability(int[][] tablero) {
-
-        String tableroSerializado = Tablero.serializarTablero(tablero);
-
-        //si aun no contiene la tabla, insertar con valor inicial 0.5
-        if (!tablaDeBusqueda.containsKey(tableroSerializado)) {
-            tablaDeBusqueda.put(tableroSerializado, 0.5);
-        }
-
-        return tablaDeBusqueda.get(tableroSerializado);
-    }
-
-    private void updateProbability(int[][] tablero, double nextStateProb, int jugador) {
-
-        double prob = calculateReward(tablero, jugador);
-
-        prob = prob + alpha * (nextStateProb - prob);
-
-        String tableroSerializado = Tablero.serializarTablero(tablero);
-        tablaDeBusqueda.put(tableroSerializado, prob);
-    }
-
-    public void updateAlpha(int currentGame) {
-
-        this.alpha = 0.5 - 0.49 * currentGame / this.N;
-    }
-
-    public void imprimirTablaDeBusqueda() {
-
-        for (String key : tablaDeBusqueda.keySet()) {
-            System.out.println("Tablero: " + key + ", prob: " + tablaDeBusqueda.get(key));
-            Tablero.imprimirTablero(Tablero.deserializar(key));
-        }
-    }
+//    @Override
+//    public void mover() {
+//
+//        double prob;
+//        int[][] tableroCandidato = null;
+//        double maxProb = Integer.MIN_VALUE;
+//        double q;
+//
+//        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(t, jugador);
+//
+//        if (t.estado == Tablero.JUEGO_CONTINUA) {
+//
+//            q = Math.random();
+//            //entrenar
+//            if (q <= qRate || !entrenar) {
+//                for (int[][] posibleTablero : posiblesTableros) {
+//                    prob = calculateReward(posibleTablero, jugador);
+//                    if (prob > maxProb) {
+//                        maxProb = prob;
+//                        tableroCandidato = posibleTablero;
+//                    }
+//                }
+//
+//            } else {
+//                tableroCandidato = posiblesTableros.get((int) (Math.random() * posiblesTableros.size()));
+//            }
+//
+//            if (entrenar) {
+//                updateProbability(ultimoTablero, maxProb, jugador);
+//            }
+//
+//            //aplicar jugada
+//            ultimoTablero = t.tablero;
+//            t.tablero = tableroCandidato;
+//
+//            // Gano el jugador
+//        } else if (t.estado == jugador) {
+//            updateProbability(ultimoTablero, 1.0, jugador);
+//            // Gano el oponente
+//        } else {
+//            updateProbability(ultimoTablero, 0.0, jugador);
+//        }
+////        t.imprimirTablero();
+//    }
+//
+//    private double calculateReward(int[][] tablero, int jugador) {
+//
+//        int oponente = (jugador + 1) % 2;
+//
+//        int estadoAnterior = t.estado;
+//        Tablero.generarMovimientos(t, jugador);
+////        int result = calculateResult(tablero);
+//        int result = t.estado;
+//        t.estado = estadoAnterior;
+//
+//        // Gano el jugador
+//        if (result == jugador) {
+//            return 1.0;
+//            // Gano el oponente
+//        } else if (result == oponente) {
+//            return 0.0;
+//            // No hay ganador
+//        } else {
+//            return getProbability(tablero);
+//        }
+//    }
+//
+//    private double getProbability(int[][] tablero) {
+//
+//        String tableroSerializado = Tablero.serializarTablero(tablero);
+//
+//        //si aun no contiene la tabla, insertar con valor inicial 0.5
+//        if (!tablaDeBusqueda.containsKey(tableroSerializado)) {
+//            tablaDeBusqueda.put(tableroSerializado, 0.5);
+//        }
+//
+//        return tablaDeBusqueda.get(tableroSerializado);
+//    }
+//
+//    private void updateProbability(int[][] tablero, double nextStateProb, int jugador) {
+//
+//        double prob = calculateReward(tablero, jugador);
+//
+//        prob = prob + alpha * (nextStateProb - prob);
+//
+//        String tableroSerializado = Tablero.serializarTablero(tablero);
+//        tablaDeBusqueda.put(tableroSerializado, prob);
+//    }
+//
+//    public void updateAlpha(int currentGame) {
+//
+//        this.alpha = 0.5 - 0.49 * currentGame / this.N;
+//    }
+//
+//    public void imprimirTablaDeBusqueda() {
+//
+//        for (String key : tablaDeBusqueda.keySet()) {
+//            System.out.println("Tablero: " + key + ", prob: " + tablaDeBusqueda.get(key));
+//            Tablero.imprimirTablero(Tablero.deserializar(key));
+//        }
+//    }
 }

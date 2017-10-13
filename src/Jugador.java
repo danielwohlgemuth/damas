@@ -9,7 +9,8 @@
  * @author daniel
  */
 public interface Jugador {
-    public void resetear(boolean entrenar);
-    public void mover();
-    public void finalizar();
+//    public void resetear(boolean entrenar);
+//    public void mover();
+//    public void finalizar();
+    public Object[] mover(int[][] tablero);
 }

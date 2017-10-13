@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+import java.util.ArrayList;
+
 /**
  * @author daniel
  */
@@ -15,47 +17,50 @@ public class Main {
     public static void main(String[] args) {
 
         int cantEntrenamientos = 0;
-        int cantJuegos = 3;
+        int cantJuegos = 1;
         int cantExperimentos = 10;
         double victoriasJugador0Acum = 0;
         double perdidasJugador0Acum = 0;
         double pasosProm = 0;
 
         Tablero t = new Tablero();
-//        int[][] tablero = Tablero.crearTablero();
+        int[][] tablero = Tablero.crearTablero();
 //        Tablero.printTablero(tablero);
 
         Jugador[] jugadores = new Jugador[2];
-        jugadores[0] = new Random(t, Tablero.JUGADOR_NEGRO);
-//        jugadores[0] = new RL(t, Tablero.JUGADOR_NEGRO);
-//        jugadores[0] = new Minimax(t, Tablero.JUGADOR_NEGRO);
-//        jugadores[1] = new Random(t, Tablero.JUGADOR_BLANCO);
-//        jugadores[1] = new RL(t, Tablero.JUGADOR_BLANCO);
-        jugadores[1] = new Minimax(t, Tablero.JUGADOR_BLANCO);
+//        jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
+//        jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
+//        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO);
+        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO);
+        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
+//        jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
+//        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO);
+//        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO);
 
 
         for (int x = 0; x < cantEntrenamientos; x++) {
-            t.resetear();
-            jugadores[0].resetear(true);
-            jugadores[1].resetear(true);
+//            t.resetear();
+            tablero = Tablero.crearTablero();
+//            jugadores[0].resetear(true);
+//            jugadores[1].resetear(true);
 
             int turno = Tablero.JUGADOR_NEGRO;
 //            int i = 0;
 //            t.imprimirTablero();
 
-            while (t.estado == Tablero.JUEGO_CONTINUA) {
-                jugadores[turno].mover();
+//            while (estado == Tablero.JUEGO_CONTINUA) {
+//                jugadores[turno].mover();
                 turno = (turno + 1) % 2;
 //                System.out.println(i);
 //                t.imprimirTablero();
 //                i++;
-            }
-
-            if (t.estado == Tablero.JUGADOR_BLANCO) {
-                jugadores[0].finalizar();
-            } else {
-                jugadores[1].finalizar();
-            }
+//            }
+//
+//            if (estado == Tablero.JUGADOR_BLANCO) {
+//                jugadores[0].finalizar();
+//            } else {
+//                jugadores[1].finalizar();
+//            }
         }
 
         int victoriasJugador0 = 0;
@@ -63,25 +68,32 @@ public class Main {
         int pasos = 0;
 
         for (int x = 0; x < cantJuegos; x++) {
-            t.resetear();
+//            t.resetear();
+            tablero = Tablero.crearTablero();
 
-            jugadores[0].resetear(false);
-            jugadores[1].resetear(false);
+//            jugadores[0].resetear(false);
+//            jugadores[1].resetear(false);
 
             int turno = Tablero.JUGADOR_NEGRO;
             int i = 0;
-//            t.imprimirTablero();
+            int estado = Tablero.JUEGO_CONTINUA;
+//            Tablero.imprimirTablero(tablero);
 
 
-            while (t.estado == Tablero.JUEGO_CONTINUA) {
-                jugadores[turno].mover();
+            while (estado == Tablero.JUEGO_CONTINUA) {
+//                jugadores[turno].mover(tablero);
+
+                Object[] resultado = jugadores[turno].mover(tablero);
+                tablero = (int[][]) resultado[0];
+                estado = (int) resultado[1];
+
                 turno = (turno + 1) % 2;
 //                System.out.println(i);
-//                t.imprimirTablero();
+//                Tablero.imprimirTablero(tablero);
                 i++;
             }
 
-            if (t.estado == Tablero.JUGADOR_NEGRO) {
+            if (estado == Tablero.JUGADOR_NEGRO) {
                 victoriasJugador0++;
             } else {
                 perdidasJugador0++;

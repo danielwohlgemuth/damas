@@ -12,23 +12,26 @@ import java.util.ArrayList;
 public class Random implements Jugador {
 
     private int jugador;
-    private Tablero t;
+//    private Tablero t;
 
-    Random(Tablero t, int jugador) {
+    Random(int jugador) {
         this.jugador = jugador;
-        this.t = t;
+//        this.t = t;
     }
 
-    @Override
-    public void resetear(boolean entrenar) {}
+//    @Override
+//    public void resetear(boolean entrenar) {}
+//
+//    @Override
+//    public void finalizar() {}
 
     @Override
-    public void finalizar() {}
+    public Object[] mover(int[][] tablero) {
+        Object[] resultado = Tablero.generarMovimientos(tablero, this.jugador);
+        ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
+        int estado = (int) resultado[1];
 
-    @Override
-    public void mover() {
-
-        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(t, jugador);
+//        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(tablero, jugador);
 
 //        System.out.println("Posibles");
 //        for (int[][] posibleTablero : posiblesTableros) {
@@ -36,9 +39,10 @@ public class Random implements Jugador {
 //        }
 //        System.out.println("Fin posibles");
 
-        if (t.estado == Tablero.JUEGO_CONTINUA) {
-            t.tablero = posiblesTableros.get((int) (Math.random() * posiblesTableros.size()));
+        if (estado == Tablero.JUEGO_CONTINUA) {
+            tablero = posiblesTableros.get((int) (Math.random() * posiblesTableros.size()));
         }
 
+        return new Object[] {tablero, estado};
     }
 }

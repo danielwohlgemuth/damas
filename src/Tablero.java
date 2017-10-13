@@ -23,21 +23,21 @@ class Tablero {
     private static final int VACIO = 4;
 
     // Negro ganador: 0, Blanco ganador: 1, En curso: 2
-    int estado;
-    int[][] tablero;
+//    int estado;
+//    int[][] tablero;
 
-    Tablero() {
-        estado = Tablero.JUEGO_CONTINUA;
-        tablero = Tablero.crearTablero();
-    }
-
-    public void resetear() {
-        tablero = crearTablero();
-        estado = Tablero.JUEGO_CONTINUA;
-    }
+//    Tablero() {
+//        estado = Tablero.JUEGO_CONTINUA;
+//        tablero = Tablero.crearTablero();
+//    }
+//
+//    void resetear() {
+//        tablero = crearTablero();
+//        estado = Tablero.JUEGO_CONTINUA;
+//    }
 
     // 3 primeras filas blancas, 3 ultimas filas negras
-    private static int[][] crearTablero() {
+    static int[][] crearTablero() {
 
         int[][] tablero = new int[8][8];
         for (int i = 0; i < 8; i++) {
@@ -89,9 +89,9 @@ class Tablero {
         return tablero;
     }
 
-    void imprimirTablero() {
-        Tablero.imprimirTablero(tablero);
-    }
+//    void imprimirTablero() {
+//        Tablero.imprimirTablero(tablero);
+//    }
 
     static void imprimirTablero(int[][] tablero) {
 
@@ -115,6 +115,7 @@ class Tablero {
             System.out.print("|");
             System.out.println();
         }
+        System.out.println();
     }
 
     private static void swap(int[][] tablero, int i, int j, int k, int l) {
@@ -145,13 +146,14 @@ class Tablero {
         return tableroNuevo;
     }
 
-    static ArrayList<int [][]> generarMovimientos(Tablero t, int jugador) {
+    static Object[] generarMovimientos(int[][] tablero, int jugador) {
         // N: Norte, E: Este, S: Sur, O: Oeste
         // Las direcciones en sentido horario: NE, SE, SO, NO
-        int[][] tablero = t.tablero;
+//        int[][] tablero = t.tablero;
         ArrayList<int [][]> tablerosPosibles = new ArrayList<>();
         int oponente = (jugador+1) % 2;
         boolean capturaRealizada = false;
+        int estado;
         int[][] tableroModificado;
         int x1, y1, x2, y2;
         int[] fichasRestantes = new int[] {0, 0};
@@ -236,13 +238,15 @@ class Tablero {
 
         // Si el jugador quedo bloqueado o sin fichas, pierde
         if (tablerosPosibles.size() == 0 || fichasRestantes[jugador] == 0) {
-            t.estado = oponente;
+            estado = oponente;
             // Si el oponente quedo sin fichas, gana
         } else if (fichasRestantes[oponente] == 0) {
-            t.estado = jugador;
+            estado = jugador;
+        } else {
+            estado = Tablero.JUEGO_CONTINUA;
         }
 
-        return tablerosPosibles;
+        return new Object[] {tablerosPosibles, estado};
     }
 
     private static void masCapturas(ArrayList<int[][]> tablerosPosibles, int[][] tablero, int x, int y, int jugador) {
