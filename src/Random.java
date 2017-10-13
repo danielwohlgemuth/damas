@@ -7,26 +7,38 @@
 import java.util.ArrayList;
 
 /**
- *
  * @author daniel
  */
 public class Random implements Jugador {
 
     private int jugador;
+    private Tablero t;
 
-    Random(int jugador) {
+    Random(Tablero t, int jugador) {
         this.jugador = jugador;
+        this.t = t;
     }
 
     @Override
-    public int[][] mover(int[][] tablero) {
+    public void resetear(boolean entrenar) {}
 
-        ArrayList<int [][]> posiblesTableros = Tablero.generarMovimientos(tablero, this.jugador);
+    @Override
+    public void finalizar() {}
 
-//        for (int i = 0; i < posiblesTableros.size(); i++) {
-//            Tablero.printTablero(posiblesTableros.get(i));
+    @Override
+    public void mover() {
+
+        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(t, jugador);
+
+//        System.out.println("Posibles");
+//        for (int[][] posibleTablero : posiblesTableros) {
+//            Tablero.imprimirTablero(posibleTablero);
 //        }
+//        System.out.println("Fin posibles");
 
-        return posiblesTableros.get((int)(Math.random() * posiblesTableros.size()));
+        if (t.estado == Tablero.JUEGO_CONTINUA) {
+            t.tablero = posiblesTableros.get((int) (Math.random() * posiblesTableros.size()));
+        }
+
     }
 }

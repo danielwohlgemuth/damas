@@ -9,5 +9,7 @@
  * @author daniel
  */
 public interface Jugador {
-    public int[][] mover(int[][] tablero);
+    public void resetear(boolean entrenar);
+    public void mover();
+    public void finalizar();
 }

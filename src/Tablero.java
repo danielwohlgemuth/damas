@@ -14,15 +14,30 @@ import java.util.ArrayList;
 class Tablero {
     static final int JUGADOR_NEGRO = 0;
     static final int JUGADOR_BLANCO = 1;
-    static final int PEON_NEGRO = 0;
-    static final int PEON_BLANCO = 1;
+    static final int JUEGO_CONTINUA = 2;
+
+    private static final int PEON_NEGRO = 0;
+    private static final int PEON_BLANCO = 1;
     private static final int DAMA_NEGRA = 2;
     private static final int DAMA_BLANCA = 3;
-    static final int VACIO = 4;
+    private static final int VACIO = 4;
 
+    // Negro ganador: 0, Blanco ganador: 1, En curso: 2
+    int estado;
+    int[][] tablero;
+
+    Tablero() {
+        estado = Tablero.JUEGO_CONTINUA;
+        tablero = Tablero.crearTablero();
+    }
+
+    public void resetear() {
+        tablero = crearTablero();
+        estado = Tablero.JUEGO_CONTINUA;
+    }
 
     // 3 primeras filas blancas, 3 ultimas filas negras
-    static int[][] crearTablero() {
+    private static int[][] crearTablero() {
 
         int[][] tablero = new int[8][8];
         for (int i = 0; i < 8; i++) {
@@ -74,7 +89,11 @@ class Tablero {
         return tablero;
     }
 
-    static void printTablero(int[][] tablero) {
+    void imprimirTablero() {
+        Tablero.imprimirTablero(tablero);
+    }
+
+    static void imprimirTablero(int[][] tablero) {
 
         System.out.println();
         for (int[] aTablero : tablero) {
@@ -126,15 +145,16 @@ class Tablero {
         return tableroNuevo;
     }
 
-
-    static ArrayList<int [][]> generarMovimientos(int[][] tablero, int jugador) {
+    static ArrayList<int [][]> generarMovimientos(Tablero t, int jugador) {
         // N: Norte, E: Este, S: Sur, O: Oeste
         // Las direcciones en sentido horario: NE, SE, SO, NO
+        int[][] tablero = t.tablero;
         ArrayList<int [][]> tablerosPosibles = new ArrayList<>();
         int oponente = (jugador+1) % 2;
         boolean capturaRealizada = false;
         int[][] tableroModificado;
         int x1, y1, x2, y2;
+        int[] fichasRestantes = new int[] {0, 0};
 
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
@@ -201,13 +221,25 @@ class Tablero {
 //                                    System.out.println(" x:"+x+" y:"+y+" x1:"+x1+" y1:"+y1+" x2:"+x2+" y2:"+y2);
                                     masCapturas(tablerosPosibles, tableroModificado, x2, y2, jugador);
                                 } else {
-                                    tablerosPosibles.add(tablero);
+                                    tablerosPosibles.add(tableroModificado);
                                 }
                             }
                         }
                     }
                 }
+
+                if (tablero[x][y] != Tablero.VACIO) {
+                    fichasRestantes[tablero[x][y]%2] += 1;
+                }
             }
+        }
+
+        // Si el jugador quedo bloqueado o sin fichas, pierde
+        if (tablerosPosibles.size() == 0 || fichasRestantes[jugador] == 0) {
+            t.estado = oponente;
+            // Si el oponente quedo sin fichas, gana
+        } else if (fichasRestantes[oponente] == 0) {
+            t.estado = jugador;
         }
 
         return tablerosPosibles;
@@ -296,6 +328,20 @@ class Tablero {
         }
 
         return false;
+    }
+
+    static int heuristica(int[][] tablero, int jugador) {
+
+        int[] fichasRestantes = new int[] {0, 0};
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (tablero[x][y] != Tablero.VACIO) {
+                    fichasRestantes[tablero[x][y]%2] += 1;
+                }
+            }
+        }
+        return fichasRestantes[jugador]-fichasRestantes[(jugador+1)%2];
+
     }
 
 }

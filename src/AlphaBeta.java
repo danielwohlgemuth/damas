@@ -8,10 +8,10 @@
  *
  * @author daniel
  */
-public class AlphaBeta implements Jugador {
-    @Override
-    public int[][] mover(int[][] tablero) {
-        return new int[1][1];
-    }
+public class AlphaBeta {
+//    @Override
+//    public int[][] mover(int[][] tablero) {
+//        return new int[1][1];
+//    }
     
 }
