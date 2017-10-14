@@ -14,12 +14,10 @@ public class Random implements Jugador {
 
     private int primerJugador;
     private int jugador;
-//    private Tablero t;
 
     Random(int jugador) {
         primerJugador = jugador;
         this.jugador = jugador;
-//        this.t = t;
     }
 
     @Override

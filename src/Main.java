@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args) {
 
         int cantEntrenamientos = 0;
-        int cantJuegos = 1;
+        int cantJuegos = 2;
         int cantExperimentos = 10;
         double victoriasJugador0Acum = 0;
         double empatesJugador0Acum = 0;
@@ -32,14 +32,12 @@ public class Main {
 
 //        jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
 //        jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
-        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, 2);
-//        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
-        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
+//        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, 3);
+        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
+//        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
 //        jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
-//        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO, 2);
-//        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
-
-
+//        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO, 3);
+        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
 
 //        for (int x = 0; x < cantEntrenamientos; x++) {
 //            t.resetear();
@@ -67,7 +65,7 @@ public class Main {
         int victoriasJugador0 = 0;
         int empatesJugador0 = 0;
         int perdidasJugador0 = 0;
-
+        int turnoJuego = Tablero.JUGADOR_NEGRO;
 
 //        if (jugadores[0] instanceof RL) {
 //            System.out.println("RL0");
@@ -83,12 +81,17 @@ public class Main {
 //            jugadores[0].resetear(false);
 //            jugadores[1].resetear(false);
 
-            int turno = Tablero.JUGADOR_NEGRO;
+            int turno = turnoJuego;
             int cantJugadas = 0;
             int estado = Tablero.JUEGO_CONTINUA;
             int pasosSinCaptura = 0;
             boolean captura;
 //            Tablero.imprimirTablero(tablero);
+
+//            System.out.println("Turno: "+turno);
+
+            jugadores[0].setJugador(turno);
+            jugadores[1].setJugador(Tablero.jugadorOpuesto(turno));
 
 
             while (estado == Tablero.JUEGO_CONTINUA && pasosSinCaptura < 100) {
@@ -103,12 +106,12 @@ public class Main {
                     pasosSinCaptura = 0;
                 }
 
-                turno = (turno + 1) % 2;
+                turno = Tablero.jugadorOpuesto(turno);
                 cantJugadas++;
 //                System.out.println(cantJugadas);
 //                Tablero.imprimirTablero(tablero);
             }
-//            Tablero.imprimirTablero(tablero);
+            Tablero.imprimirTablero(tablero);
 
             if (estado == Tablero.JUGADOR_NEGRO) {
                 victoriasJugador0++;
@@ -118,18 +121,19 @@ public class Main {
             } else {
                 empatesJugador0++;
             }
-//            pasos += i;
-            jugadasProm += (double)cantJugadas/cantJuegos;
+
+            jugadasProm += (double) cantJugadas / cantJuegos;
+            turnoJuego = Tablero.jugadorOpuesto(turnoJuego);
         }
 
-        victoriasJugador0Acum += (double)victoriasJugador0/cantJuegos;
-        empatesJugador0Acum += (double)empatesJugador0/cantJuegos;
-        perdidasJugador0Acum += (double)perdidasJugador0/cantJuegos;
+        victoriasJugador0Acum += (double) victoriasJugador0 / cantJuegos;
+        empatesJugador0Acum += (double) empatesJugador0 / cantJuegos;
+        perdidasJugador0Acum += (double) perdidasJugador0 / cantJuegos;
 
-        System.out.println("Ratio "+jugadores[0]+": " + victoriasJugador0Acum);
+        System.out.println("Ratio " + jugadores[0] + ": " + victoriasJugador0Acum);
         System.out.println("Ratio empates: " + empatesJugador0Acum);
-        System.out.println("Ratio "+jugadores[1]+": " + perdidasJugador0Acum);
-        System.out.println("Jugadas promedio: " + (int)jugadasProm);
+        System.out.println("Ratio " + jugadores[1] + ": " + perdidasJugador0Acum);
+        System.out.println("Jugadas promedio: " + (int) jugadasProm);
     }
 }
 

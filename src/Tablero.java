@@ -9,7 +9,6 @@ import java.util.HashMap;
  */
 
 /**
- *
  * @author daniel
  */
 class Tablero {
@@ -141,8 +140,8 @@ class Tablero {
         swap(tableroNuevo, x1, y1, x2, y2);
 
         // Es una captura
-        if (Math.abs(x1-x2) == 2) {
-            tableroNuevo[(x1+x2)/2][(y1+y2)/2] = Tablero.VACIO;
+        if (Math.abs(x1 - x2) == 2) {
+            tableroNuevo[(x1 + x2) / 2][(y1 + y2) / 2] = Tablero.VACIO;
         }
 
         return tableroNuevo;
@@ -152,65 +151,65 @@ class Tablero {
         // N: Norte, E: Este, S: Sur, O: Oeste
         // Las direcciones en sentido horario: NE, SE, SO, NO
 //        int[][] tablero = t.tablero;
-        ArrayList<int [][]> tablerosPosibles = new ArrayList<>();
-        HashMap<int[][], Boolean> tablerosConCaptura= new HashMap<>();
-        int oponente = (jugador+1) % 2;
+        ArrayList<int[][]> tablerosPosibles = new ArrayList<>();
+        HashMap<int[][], Boolean> tablerosConCaptura = new HashMap<>();
+        int oponente = Tablero.jugadorOpuesto(jugador);
         boolean capturaRealizada = false;
         int estado;
         int[][] tableroModificado;
         int x1, y1, x2, y2;
-        int[] fichasRestantes = new int[] {0, 0};
+        int[] fichasRestantes = new int[]{0, 0};
 
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 // Es pieza del jugador?
-                if (tablero[x][y] != Tablero.VACIO && tablero[x][y]%2 == jugador) {
+                if (tablero[x][y] != Tablero.VACIO && tablero[x][y] % 2 == jugador) {
 
                     for (int i = 1; i <= 4; i++) {
                         if (i == 1) {
                             // NE
                             x1 = x - (int) Math.pow(-1, jugador);
                             y1 = y + (int) Math.pow(-1, jugador);
-                            x2 = x - 2 * (int)Math.pow(-1, jugador);
-                            y2 = y + 2 * (int)Math.pow(-1, jugador);
+                            x2 = x - 2 * (int) Math.pow(-1, jugador);
+                            y2 = y + 2 * (int) Math.pow(-1, jugador);
                         } else if (i == 2) {
                             // NO
                             x1 = x - (int) Math.pow(-1, jugador);
                             y1 = y - (int) Math.pow(-1, jugador);
-                            x2 = x - 2 * (int)Math.pow(-1, jugador);
-                            y2 = y - 2 * (int)Math.pow(-1, jugador);
+                            x2 = x - 2 * (int) Math.pow(-1, jugador);
+                            y2 = y - 2 * (int) Math.pow(-1, jugador);
                             // Es dama
-                        } else if (tablero[x][y]/2 == 1) {
+                        } else if (tablero[x][y] / 2 == 1) {
                             if (i == 3) {
                                 // SE
                                 x1 = x + (int) Math.pow(-1, jugador);
                                 y1 = y + (int) Math.pow(-1, jugador);
-                                x2 = x + 2 * (int)Math.pow(-1, jugador);
-                                y2 = y + 2 * (int)Math.pow(-1, jugador);
-                            // i == 4
+                                x2 = x + 2 * (int) Math.pow(-1, jugador);
+                                y2 = y + 2 * (int) Math.pow(-1, jugador);
+                                // i == 4
                             } else {
                                 // SO
                                 x1 = x + (int) Math.pow(-1, jugador);
                                 y1 = y - (int) Math.pow(-1, jugador);
-                                x2 = x + 2 * (int)Math.pow(-1, jugador);
-                                y2 = y - 2 * (int)Math.pow(-1, jugador);
+                                x2 = x + 2 * (int) Math.pow(-1, jugador);
+                                y2 = y - 2 * (int) Math.pow(-1, jugador);
                             }
                         } else {
                             continue;
                         }
 
-                        if (posicionValida(x1, y1)){
+                        if (posicionValida(x1, y1)) {
                             // Posicion vacia
-                            if (!capturaRealizada && tablero[x1][y1] == Tablero.VACIO){
+                            if (!capturaRealizada && tablero[x1][y1] == Tablero.VACIO) {
 //                                System.out.println("mov");
 //                                System.out.println(" x:"+x+" y:"+y+" x1:"+x1+" y1:"+y1+" x2:"+x2+" y2:"+y2);
                                 tableroModificado = crearTableroModificado(tablero, x, y, x1, y1);
                                 convertirEnDama(tableroModificado, x1, y1, jugador);
                                 tablerosPosibles.add(tableroModificado);
                                 tablerosConCaptura.put(tableroModificado, false);
-                            // Capturable
-                            } else if (tablero[x1][y1] != Tablero.VACIO && tablero[x1][y1]%2 == oponente
-                                    && posicionValida(x2, y2) && tablero[x2][y2] == Tablero.VACIO){
+                                // Capturable
+                            } else if (tablero[x1][y1] != Tablero.VACIO && tablero[x1][y1] % 2 == oponente
+                                    && posicionValida(x2, y2) && tablero[x2][y2] == Tablero.VACIO) {
                                 if (!capturaRealizada) {
                                     capturaRealizada = true;
 //                                    System.out.println("del");
@@ -236,7 +235,7 @@ class Tablero {
                 }
 
                 if (tablero[x][y] != Tablero.VACIO) {
-                    fichasRestantes[tablero[x][y]%2] += 1;
+                    fichasRestantes[tablero[x][y] % 2] += 1;
                 }
             }
         }
@@ -251,13 +250,13 @@ class Tablero {
             estado = Tablero.JUEGO_CONTINUA;
         }
 
-        return new Object[] {tablerosPosibles, estado, tablerosConCaptura};
+        return new Object[]{tablerosPosibles, estado, tablerosConCaptura};
     }
 
     private static void masCapturas(ArrayList<int[][]> tablerosPosibles, HashMap<int[][], Boolean> tablerosConCaptura,
                                     int[][] tablero, int x, int y, int jugador) {
         boolean capturaRealizada = false;
-        int oponente = (jugador+1) % 2;
+        int oponente = Tablero.jugadorOpuesto(jugador);
         int[][] tableroModificado;
         int x1, y1, x2, y2;
 
@@ -266,37 +265,37 @@ class Tablero {
                 // NE
                 x1 = x - (int) Math.pow(-1, jugador);
                 y1 = y + (int) Math.pow(-1, jugador);
-                x2 = x - 2 * (int)Math.pow(-1, jugador);
-                y2 = y + 2 * (int)Math.pow(-1, jugador);
+                x2 = x - 2 * (int) Math.pow(-1, jugador);
+                y2 = y + 2 * (int) Math.pow(-1, jugador);
             } else if (i == 2) {
                 // NO
                 x1 = x - (int) Math.pow(-1, jugador);
                 y1 = y - (int) Math.pow(-1, jugador);
-                x2 = x - 2 * (int)Math.pow(-1, jugador);
-                y2 = y - 2 * (int)Math.pow(-1, jugador);
-            // Es dama
-            } else if (tablero[x][y]/2 == 1) {
+                x2 = x - 2 * (int) Math.pow(-1, jugador);
+                y2 = y - 2 * (int) Math.pow(-1, jugador);
+                // Es dama
+            } else if (tablero[x][y] / 2 == 1) {
                 if (i == 3) {
                     // SE
                     x1 = x + (int) Math.pow(-1, jugador);
                     y1 = y - (int) Math.pow(-1, jugador);
-                    x2 = x + 2 * (int)Math.pow(-1, jugador);
-                    y2 = y - 2 * (int)Math.pow(-1, jugador);
-                // i == 4
+                    x2 = x + 2 * (int) Math.pow(-1, jugador);
+                    y2 = y - 2 * (int) Math.pow(-1, jugador);
+                    // i == 4
                 } else {
                     // SO
                     x1 = x + (int) Math.pow(-1, jugador);
                     y1 = y + (int) Math.pow(-1, jugador);
-                    x2 = x + 2 * (int)Math.pow(-1, jugador);
-                    y2 = y + 2 * (int)Math.pow(-1, jugador);
+                    x2 = x + 2 * (int) Math.pow(-1, jugador);
+                    y2 = y + 2 * (int) Math.pow(-1, jugador);
                 }
             } else {
                 continue;
             }
 
             // Capturable
-            if (posicionValida(x1, y1) && tablero[x1][y1] != Tablero.VACIO && tablero[x1][y1]%2 == oponente
-                    && posicionValida(x2, y2) && tablero[x2][y2] == Tablero.VACIO){
+            if (posicionValida(x1, y1) && tablero[x1][y1] != Tablero.VACIO && tablero[x1][y1] % 2 == oponente
+                    && posicionValida(x2, y2) && tablero[x2][y2] == Tablero.VACIO) {
                 capturaRealizada = true;
 
 //                System.out.println("cap1");
@@ -344,17 +343,21 @@ class Tablero {
 
     static int heuristica(int[][] tablero, int jugador) {
 
-        int[] fichasRestantes = new int[] {0, 0};
+        int[] fichasRestantes = new int[]{0, 0};
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 if (tablero[x][y] != Tablero.VACIO) {
-                    fichasRestantes[tablero[x][y]%2] += 1;
+                    fichasRestantes[tablero[x][y] % 2] += 1;
 //                    fichasRestantes[tablero[x][y]%2] += 1 + tablero[x][y]/2;
                 }
             }
         }
-        return fichasRestantes[jugador]-fichasRestantes[(jugador+1)%2];
+        return fichasRestantes[jugador] - fichasRestantes[(jugador + 1) % 2];
 
+    }
+
+    static int jugadorOpuesto(int jugador) {
+        return (jugador + 1) % 2;
     }
 
 }

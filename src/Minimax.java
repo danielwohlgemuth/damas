@@ -14,13 +14,11 @@ public class Minimax implements Jugador {
 
     private int primerJugador;
     private int jugador;
-    private int oponente;
     private int profundidad;
 
     Minimax(int jugador, int profundidad) {
         primerJugador = jugador;
         this.jugador = jugador;
-        oponente = (jugador + 1) % 2;
         if (profundidad > 1) {
             this.profundidad = profundidad;
         } else {
@@ -30,7 +28,7 @@ public class Minimax implements Jugador {
 
     @Override
     public String toString() {
-        return "Minimax("+profundidad+")["+primerJugador+"]";
+        return "Minimax(" + profundidad + ")[" + primerJugador + "]";
     }
 
     @Override
@@ -55,7 +53,7 @@ public class Minimax implements Jugador {
 
         if (posiblesTableros.size() != 0 && estado == Tablero.JUEGO_CONTINUA) {
             for (int[][] posibleTablero : posiblesTableros) {
-                valorActual = minimax(posibleTablero, this.profundidad, this.oponente);
+                valorActual = minimax(posibleTablero, this.profundidad, Tablero.jugadorOpuesto(this.jugador));
                 if (valorActual > mayorValor) {
                     mayorValor = valorActual;
                     tableroCandidato = posibleTablero;
@@ -88,7 +86,7 @@ public class Minimax implements Jugador {
         } else {
             if (jugador == this.jugador) {
                 for (int[][] posibleTablero : posiblesTableros) {
-                    mayorValor = Math.max(mayorValor, minimax(posibleTablero, profundidad - 1, oponente));
+                    mayorValor = Math.max(mayorValor, minimax(posibleTablero, profundidad - 1, Tablero.jugadorOpuesto(this.jugador)));
 //                    if (valorActual > mayorValor) {
 //                        mayorValor = valorActual;
 //                    }

@@ -14,13 +14,11 @@ public class AlphaBeta implements Jugador {
 
     private int primerJugador;
     private int jugador;
-    private int oponente;
     private int profundidad;
 
     AlphaBeta(int jugador, int profundidad) {
         primerJugador = jugador;
         this.jugador = jugador;
-        oponente = (jugador + 1) % 2;
         if (profundidad > 1) {
             this.profundidad = profundidad;
         } else {
@@ -30,7 +28,7 @@ public class AlphaBeta implements Jugador {
 
     @Override
     public String toString() {
-        return "AlphaBeta("+profundidad+")["+primerJugador+"]";
+        return "AlphaBeta(" + profundidad + ")[" + primerJugador + "]";
     }
 
     @Override
@@ -57,24 +55,25 @@ public class AlphaBeta implements Jugador {
 //        }
 //        System.out.println("Fin posibles");
 
-        int alpha = Integer.MIN_VALUE;
-        int beta = Integer.MAX_VALUE;
-        int majorValor = Integer.MIN_VALUE;
-        int valorActual;
-        int[][] tableroCandidato = null;
+//        int[][] tableroCandidato = null;
 //        int estadoAnterior = t.estado;
 
         if (posiblesTableros.size() != 0 && estado == Tablero.JUEGO_CONTINUA) {
+            int alpha = Integer.MIN_VALUE;
+            int beta = Integer.MAX_VALUE;
+            int majorValor = Integer.MIN_VALUE;
+            int valorActual;
+
             for (int[][] posibleTablero : posiblesTableros) {
 //                System.out.println("Max 0 Posible");
 //                Tablero.imprimirTablero(posibleTablero);
-                valorActual = minimax(posibleTablero, this.profundidad, alpha, beta, this.oponente);
+                valorActual = minimax(posibleTablero, this.profundidad, alpha, beta, Tablero.jugadorOpuesto(this.jugador));
                 if (valorActual > majorValor) {
                     majorValor = valorActual;
-                    tableroCandidato = posibleTablero;
+                    tablero = posibleTablero;
                 }
             }
-            tablero = tableroCandidato;
+//            tablero = tableroCandidato;
 //            estado = estadoAnterior;
             captura = tablerosConCaptura.get(tablero);
         }
@@ -106,15 +105,12 @@ public class AlphaBeta implements Jugador {
 
 //            System.out.println("Heuristica " + mayorValor);
 //            System.out.println("Jugador " + jugador);
-//            } else {
-//                majorValor = -Tablero.heuristica(tablero);
-//            }
         } else {
             if (jugador == this.jugador) {
                 for (int[][] posibleTablero : posiblesTableros) {
 //                    System.out.println("Max Posible");
 //                    Tablero.imprimirTablero(tablero);
-                    mayorValor = Math.max(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, oponente));
+                    mayorValor = Math.max(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, Tablero.jugadorOpuesto(this.jugador)));
                     alpha = Math.max(alpha, mayorValor);
 //                    System.out.println("Max mayor " + mayorValor);
                     if (beta <= mayorValor) {
@@ -132,10 +128,8 @@ public class AlphaBeta implements Jugador {
                         break;
                     }
                 }
-
             }
         }
         return mayorValor;
-
     }
 }

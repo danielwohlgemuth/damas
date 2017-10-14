@@ -125,7 +125,7 @@ public class RL implements Jugador {
 //
 //    private double calculateReward(int[][] tablero, int jugador) {
 //
-//        int oponente = (jugador + 1) % 2;
+//        int oponente = Tablero.jugadorOpuesto(jugador);
 //
 //        int estadoAnterior = t.estado;
 //        Tablero.generarMovimientos(t, jugador);
