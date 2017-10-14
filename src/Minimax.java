@@ -5,18 +5,20 @@
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author daniel
  */
 public class Minimax implements Jugador {
 
+    private int primerJugador;
     private int jugador;
     private int oponente;
     private int profundidad;
-//    private Tablero t;
 
     Minimax(int jugador, int profundidad) {
+        primerJugador = jugador;
         this.jugador = jugador;
         oponente = (jugador + 1) % 2;
         if (profundidad > 1) {
@@ -24,17 +26,17 @@ public class Minimax implements Jugador {
         } else {
             this.profundidad = 1;
         }
-//        this.t = t;
     }
 
-//    @Override
-//    public void resetear(boolean entrenar) {
-//    }
-//
-//    @Override
-//    public void finalizar() {
-//    }
+    @Override
+    public String toString() {
+        return "Minimax("+profundidad+")["+primerJugador+"]";
+    }
 
+    @Override
+    public void setJugador(int jugador) {
+        this.jugador = jugador;
+    }
 
     @Override
     public Object[] mover(int[][] tablero) {
@@ -42,6 +44,9 @@ public class Minimax implements Jugador {
         @SuppressWarnings("unchecked")
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
         int estado = (int) resultado[1];
+        @SuppressWarnings("unchecked")
+        HashMap<int[][], Boolean> tablerosConCaptura = (HashMap<int[][], Boolean>) resultado[2];
+        boolean captura = false;
 
         int mayorValor = Integer.MIN_VALUE;
         int valorActual;
@@ -58,9 +63,10 @@ public class Minimax implements Jugador {
             }
             tablero = tableroCandidato;
 //            estado = estadoAnterior;
+            captura = tablerosConCaptura.get(tablero);
         }
 
-        return new Object[]{tablero, estado};
+        return new Object[]{tablero, estado, captura};
     }
 
     private int minimax(int[][] tablero, int profundidad, int jugador) {

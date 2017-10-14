@@ -20,6 +20,7 @@ public class RL implements Jugador {
     private Tablero t;
     private double alpha;
     private boolean entrenar;
+    private int primerJugador;
     private int jugador;
     private double qRate = 0.1;
     private int N = 1000;
@@ -31,13 +32,24 @@ public class RL implements Jugador {
 
 
     public RL(Tablero t, int jugador) {
+        primerJugador = jugador;
         tablaDeBusqueda = new HashMap<>();
         entrenar = true;
         this.t = t;
         this.jugador = jugador;
     }
 
-//    @Override
+    @Override
+    public String toString() {
+        return "Reinforment Learning["+primerJugador+"]";
+    }
+
+    @Override
+    public void setJugador(int jugador) {
+        this.jugador = jugador;
+    }
+
+    //    @Override
 //    public void resetear(boolean entrenar) {
 //        this.entrenar = entrenar;
 //        ultimoTablero = t.tablero;

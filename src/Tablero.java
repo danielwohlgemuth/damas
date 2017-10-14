@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,6 +16,7 @@ class Tablero {
     static final int JUGADOR_NEGRO = 0;
     static final int JUGADOR_BLANCO = 1;
     static final int JUEGO_CONTINUA = 2;
+//    static final int JUEGO_EMPATADO = 3;
 
     private static final int PEON_NEGRO = 0;
     private static final int PEON_BLANCO = 1;
@@ -151,6 +153,7 @@ class Tablero {
         // Las direcciones en sentido horario: NE, SE, SO, NO
 //        int[][] tablero = t.tablero;
         ArrayList<int [][]> tablerosPosibles = new ArrayList<>();
+        HashMap<int[][], Boolean> tablerosConCaptura= new HashMap<>();
         int oponente = (jugador+1) % 2;
         boolean capturaRealizada = false;
         int estado;
@@ -204,6 +207,7 @@ class Tablero {
                                 tableroModificado = crearTableroModificado(tablero, x, y, x1, y1);
                                 convertirEnDama(tableroModificado, x1, y1, jugador);
                                 tablerosPosibles.add(tableroModificado);
+                                tablerosConCaptura.put(tableroModificado, false);
                             // Capturable
                             } else if (tablero[x1][y1] != Tablero.VACIO && tablero[x1][y1]%2 == oponente
                                     && posicionValida(x2, y2) && tablero[x2][y2] == Tablero.VACIO){
@@ -221,9 +225,10 @@ class Tablero {
 
 //                                    System.out.println("cap");
 //                                    System.out.println(" x:"+x+" y:"+y+" x1:"+x1+" y1:"+y1+" x2:"+x2+" y2:"+y2);
-                                    masCapturas(tablerosPosibles, tableroModificado, x2, y2, jugador);
+                                    masCapturas(tablerosPosibles, tablerosConCaptura, tableroModificado, x2, y2, jugador);
                                 } else {
                                     tablerosPosibles.add(tableroModificado);
+                                    tablerosConCaptura.put(tableroModificado, true);
                                 }
                             }
                         }
@@ -246,10 +251,11 @@ class Tablero {
             estado = Tablero.JUEGO_CONTINUA;
         }
 
-        return new Object[] {tablerosPosibles, estado};
+        return new Object[] {tablerosPosibles, estado, tablerosConCaptura};
     }
 
-    private static void masCapturas(ArrayList<int[][]> tablerosPosibles, int[][] tablero, int x, int y, int jugador) {
+    private static void masCapturas(ArrayList<int[][]> tablerosPosibles, HashMap<int[][], Boolean> tablerosConCaptura,
+                                    int[][] tablero, int x, int y, int jugador) {
         boolean capturaRealizada = false;
         int oponente = (jugador+1) % 2;
         int[][] tableroModificado;
@@ -300,15 +306,17 @@ class Tablero {
                 if (!convertirEnDama(tableroModificado, x2, y2, jugador)) {
 
 //                    System.out.println("cap2");
-                    masCapturas(tablerosPosibles, tableroModificado, x2, y2, jugador);
+                    masCapturas(tablerosPosibles, tablerosConCaptura, tableroModificado, x2, y2, jugador);
                 } else {
-                    tablerosPosibles.add(tablero);
+                    tablerosPosibles.add(tableroModificado);
+                    tablerosConCaptura.put(tableroModificado, true);
                 }
             }
         }
 
         if (!capturaRealizada) {
             tablerosPosibles.add(tablero);
+            tablerosConCaptura.put(tablero, true);
         }
     }
 
@@ -341,6 +349,7 @@ class Tablero {
             for (int y = 0; y < 8; y++) {
                 if (tablero[x][y] != Tablero.VACIO) {
                     fichasRestantes[tablero[x][y]%2] += 1;
+//                    fichasRestantes[tablero[x][y]%2] += 1 + tablero[x][y]/2;
                 }
             }
         }
