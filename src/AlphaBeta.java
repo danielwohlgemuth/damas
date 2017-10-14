@@ -13,11 +13,18 @@ public class AlphaBeta implements Jugador {
 
     private int jugador;
     private int oponente;
+    private int profundidad;
+
 //    private Tablero t;
 
-    AlphaBeta(int jugador) {
+    AlphaBeta(int jugador, int profundidad) {
         this.jugador = jugador;
         oponente = (jugador + 1) % 2;
+        if (profundidad > 1) {
+            this.profundidad = profundidad;
+        } else {
+            this.profundidad = 1;
+        }
 //        this.t = t;
     }
 //
@@ -33,6 +40,7 @@ public class AlphaBeta implements Jugador {
     public Object[] mover(int[][] tablero) {
 
         Object[] resultado = Tablero.generarMovimientos(tablero, this.jugador);
+        @SuppressWarnings("unchecked")
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
         int estado = (int) resultado[1];
 
@@ -55,7 +63,7 @@ public class AlphaBeta implements Jugador {
             for (int[][] posibleTablero : posiblesTableros) {
 //                System.out.println("Max 0 Posible");
 //                Tablero.imprimirTablero(posibleTablero);
-                valorActual = minimax(posibleTablero, 2, alpha, beta, this.oponente);
+                valorActual = minimax(posibleTablero, this.profundidad, alpha, beta, this.oponente);
                 if (valorActual > majorValor) {
                     majorValor = valorActual;
                     tableroCandidato = posibleTablero;
@@ -65,11 +73,12 @@ public class AlphaBeta implements Jugador {
 //            estado = estadoAnterior;
         }
 
-        return new Object[] {tablero, estado};
+        return new Object[]{tablero, estado};
     }
 
     private int minimax(int[][] tablero, int profundidad, int alpha, int beta, int jugador) {
         Object[] resultado = Tablero.generarMovimientos(tablero, jugador);
+        @SuppressWarnings("unchecked")
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
         int estado = (int) resultado[1];
 
@@ -95,8 +104,8 @@ public class AlphaBeta implements Jugador {
 //                majorValor = -Tablero.heuristica(tablero);
 //            }
         } else {
-            for (int[][] posibleTablero : posiblesTableros) {
-                if (jugador == this.jugador) {
+            if (jugador == this.jugador) {
+                for (int[][] posibleTablero : posiblesTableros) {
 //                    System.out.println("Max Posible");
 //                    Tablero.imprimirTablero(tablero);
                     mayorValor = Math.max(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, oponente));
@@ -105,7 +114,9 @@ public class AlphaBeta implements Jugador {
                     if (beta <= mayorValor) {
                         break;
                     }
-                } else {
+                }
+            } else {
+                for (int[][] posibleTablero : posiblesTableros) {
 //                    System.out.println("Min Posible");
 //                    Tablero.imprimirTablero(tablero);
                     mayorValor = Math.min(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, this.jugador));
@@ -115,8 +126,10 @@ public class AlphaBeta implements Jugador {
                         break;
                     }
                 }
+
             }
         }
         return mayorValor;
+
     }
 }

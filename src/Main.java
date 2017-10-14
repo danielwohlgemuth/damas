@@ -30,12 +30,12 @@ public class Main {
         Jugador[] jugadores = new Jugador[2];
         jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
 //        jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
-//        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO);
-//        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO);
+//        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, 2);
+//        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
 //        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
 //        jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
-//        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO);
-        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO);
+        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO, 2);
+//        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
 
 
         for (int x = 0; x < cantEntrenamientos; x++) {
@@ -51,9 +51,9 @@ public class Main {
 //            while (estado == Tablero.JUEGO_CONTINUA) {
 //                jugadores[turno].mover();
                 turno = (turno + 1) % 2;
+//                i++;
 //                System.out.println(i);
 //                t.imprimirTablero();
-//                i++;
 //            }
 //
 //            if (estado == Tablero.JUGADOR_BLANCO) {
