@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args) {
 
         int cantEntrenamientos = 0;
-        int cantJuegos = 1;
+        int cantJuegos = 10;
         int cantExperimentos = 10;
         double victoriasJugador0Acum = 0;
         double perdidasJugador0Acum = 0;
@@ -28,14 +28,14 @@ public class Main {
 //        Tablero.printTablero(tablero);
 
         Jugador[] jugadores = new Jugador[2];
-//        jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
+        jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
 //        jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
 //        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO);
-        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO);
-        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
+//        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO);
+//        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
 //        jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
 //        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO);
-//        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO);
+        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO);
 
 
         for (int x = 0; x < cantEntrenamientos; x++) {
@@ -88,10 +88,11 @@ public class Main {
                 estado = (int) resultado[1];
 
                 turno = (turno + 1) % 2;
+                i++;
 //                System.out.println(i);
 //                Tablero.imprimirTablero(tablero);
-                i++;
             }
+            Tablero.imprimirTablero(tablero);
 
             if (estado == Tablero.JUGADOR_NEGRO) {
                 victoriasJugador0++;

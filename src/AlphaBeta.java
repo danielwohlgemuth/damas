@@ -38,6 +38,12 @@ public class AlphaBeta implements Jugador {
 
 //        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(t, this.jugador);
 
+//        System.out.println("Posibles");
+//        for (int[][] posibleTablero : posiblesTableros) {
+//            Tablero.imprimirTablero(posibleTablero);
+//        }
+//        System.out.println("Fin posibles");
+
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
         int majorValor = Integer.MIN_VALUE;
@@ -47,8 +53,8 @@ public class AlphaBeta implements Jugador {
 
         if (posiblesTableros.size() != 0 && estado == Tablero.JUEGO_CONTINUA) {
             for (int[][] posibleTablero : posiblesTableros) {
-                System.out.println("Max 0 Posible");
-                Tablero.imprimirTablero(posibleTablero);
+//                System.out.println("Max 0 Posible");
+//                Tablero.imprimirTablero(posibleTablero);
                 valorActual = minimax(posibleTablero, 2, alpha, beta, this.oponente);
                 if (valorActual > majorValor) {
                     majorValor = valorActual;
@@ -63,39 +69,48 @@ public class AlphaBeta implements Jugador {
     }
 
     private int minimax(int[][] tablero, int profundidad, int alpha, int beta, int jugador) {
-        Object[] resultado = Tablero.generarMovimientos(tablero, this.jugador);
+        Object[] resultado = Tablero.generarMovimientos(tablero, jugador);
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
         int estado = (int) resultado[1];
+
+//        System.out.println("Actual");
+//        System.out.println("Jugador " + jugador);
+//        Tablero.imprimirTablero(tablero);
+//        System.out.println("Posibles");
+//        for (int[][] posibleTablero : posiblesTableros) {
+//            Tablero.imprimirTablero(posibleTablero);
+//        }
+//        System.out.println("Fin posibles");
 
         int mayorValor = (jugador == this.jugador) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 //        int valorActual;
 
         if (posiblesTableros.size() == 0 || estado != Tablero.JUEGO_CONTINUA || profundidad == 0) {
 //            if (jugador == this.jugador) {
-            mayorValor = Tablero.heuristica(tablero, jugador);
+            mayorValor = Tablero.heuristica(tablero, this.jugador);
 
-            System.out.println("Heuristica " + mayorValor);
-            System.out.println("Jugador " + jugador);
+//            System.out.println("Heuristica " + mayorValor);
+//            System.out.println("Jugador " + jugador);
 //            } else {
 //                majorValor = -Tablero.heuristica(tablero);
 //            }
         } else {
             for (int[][] posibleTablero : posiblesTableros) {
                 if (jugador == this.jugador) {
-                    System.out.println("Max Posible");
-                    Tablero.imprimirTablero(tablero);
+//                    System.out.println("Max Posible");
+//                    Tablero.imprimirTablero(tablero);
                     mayorValor = Math.max(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, oponente));
                     alpha = Math.max(alpha, mayorValor);
-                    System.out.println("Max mayor " + mayorValor);
+//                    System.out.println("Max mayor " + mayorValor);
                     if (beta <= mayorValor) {
                         break;
                     }
                 } else {
-                    System.out.println("Min Posible");
-                    Tablero.imprimirTablero(tablero);
+//                    System.out.println("Min Posible");
+//                    Tablero.imprimirTablero(tablero);
                     mayorValor = Math.min(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, this.jugador));
                     beta = Math.min(beta, mayorValor);
-                    System.out.println("Min mayor " + mayorValor);
+//                    System.out.println("Min mayor " + mayorValor);
                     if (mayorValor <= alpha) {
                         break;
                     }
