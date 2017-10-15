@@ -20,25 +20,20 @@ public class TableroGUI {
 
     private final JPanel gui = new JPanel(new BorderLayout(3, 3));
     private JButton[][] chessBoardSquares = new JButton[8][8];
-    //    private Image[][] chessPieceImages = new Image[2][6];
     private Image[] imagenesTablero = new Image[6];
     private JPanel chessBoard;
-    private final JLabel message = new JLabel(
-            "Chess Champ is ready to play!");
-//    private static final String COLS = "ABCDEFGH";
-//    public static final int QUEEN = 0, KING = 1,
-//            ROOK = 2, KNIGHT = 3, BISHOP = 4, PAWN = 5;
-//    public static final int[] STARTING_ROW = {
-//            ROOK, KNIGHT, BISHOP, KING, QUEEN, BISHOP, KNIGHT, ROOK
-//    };
-//    public static final int BLACK = 0, WHITE = 1;
+    private final JLabel message = new JLabel("");
+
+    private int[][] tablero;
+    int turno;
+    int pasosSinCaptura;
+    int estado;
 
     private TableroGUI() {
         inicializarGui();
     }
 
     public final void inicializarGui() {
-        // create the images for the chess pieces
         cargarImagenes();
 
         // set up the main GUI
@@ -50,10 +45,10 @@ public class TableroGUI {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                desplegarTablero(Tablero.crearTablero());
+                nuevoTablero();
             }
         });
-        tools.add(new AbstractAction("Iniciar") {
+        tools.add(new AbstractAction("Siguiente paso") {
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -62,19 +57,20 @@ public class TableroGUI {
                 jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
                 jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
 
-                int[][] tablero = Tablero.crearTablero();
-                int turno = Tablero.JUGADOR_NEGRO;
-                int estado = Tablero.JUEGO_CONTINUA;
-                int pasosSinCaptura = 0;
+//                int[][] tablero = Tablero.crearTablero();
+//                int turno = Tablero.JUGADOR_NEGRO;
+//                int turno = Tablero.JUGADOR_NEGRO;
+//                int estado = Tablero.JUEGO_CONTINUA;
+//                int pasosSinCaptura = 0;
                 boolean captura;
 
-                while (estado == Tablero.JUEGO_CONTINUA && pasosSinCaptura < 100) {
+                if (estado == Tablero.JUEGO_CONTINUA && pasosSinCaptura < 100) {
                     Object[] resultado = jugadores[turno].mover(tablero);
                     tablero = (int[][]) resultado[0];
                     estado = (int) resultado[1];
                     captura = (boolean) resultado[2];
 
-                    desplegarTablero(tablero);
+                    desplegarTablero();
                     if (!captura) {
                         pasosSinCaptura++;
                     } else {
@@ -101,17 +97,14 @@ public class TableroGUI {
                     message.setText("Ganador: " + jugadores[1]);
 //                    perdidasJugador0++;
                     // 50-moves rule
-                } else {
+                } else if (estado != Tablero.JUEGO_CONTINUA) {
                     message.setText("Empate");
 //                    empatesJugador0++;
                 }
 
-                desplegarTablero(tablero);
+                desplegarTablero();
             }
         });
-        tools.add(new JButton("Restore")); // TODO - add functionality!
-        tools.addSeparator();
-        tools.add(new JButton("Resign")); // TODO - add functionality!
         tools.addSeparator();
         tools.add(message);
 
@@ -147,7 +140,7 @@ public class TableroGUI {
                 chessBoardSquares[i][j] = b;
             }
         }
-        desplegarTablero(Tablero.crearTablero());
+        nuevoTablero();
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -169,10 +162,7 @@ public class TableroGUI {
         }
     }
 
-    /**
-     * Initializes the icons of the initial chess board piece places
-     */
-    private void desplegarTablero(int[][] tablero) {
+    private void desplegarTablero() {
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -188,6 +178,14 @@ public class TableroGUI {
                 }
             }
         }
+    }
+
+    private void nuevoTablero() {
+        tablero = Tablero.crearTablero();
+        pasosSinCaptura = 0;
+        estado = Tablero.JUEGO_CONTINUA;
+        message.setText("");
+        desplegarTablero();
     }
 
     /**
