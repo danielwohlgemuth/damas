@@ -17,11 +17,11 @@ class Tablero {
     static final int JUEGO_CONTINUA = 2;
 //    static final int JUEGO_EMPATADO = 3;
 
-    private static final int PEON_NEGRO = 0;
-    private static final int PEON_BLANCO = 1;
-    private static final int DAMA_NEGRA = 2;
-    private static final int DAMA_BLANCA = 3;
-    private static final int VACIO = 4;
+    static final int PEON_NEGRO = 0;
+    static final int PEON_BLANCO = 1;
+    static final int DAMA_NEGRA = 2;
+    static final int DAMA_BLANCA = 3;
+    static final int VACIO = 4;
 
     // Negro ganador: 0, Blanco ganador: 1, En curso: 2
 //    int estado;
@@ -64,7 +64,7 @@ class Tablero {
         return tablero;
     }
 
-    static String serializarTablero(int[][] tablero) {
+    static String serializarTablero(int[][] tablero, int jugador) {
 
         StringBuilder tableroSerializado = new StringBuilder();
         for (int[] aTablero : tablero) {
@@ -73,6 +73,7 @@ class Tablero {
                 tableroSerializado.append(aTablero[j]);
             }
         }
+        tableroSerializado.append(jugador);
 
         return tableroSerializado.toString();
     }

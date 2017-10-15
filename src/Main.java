@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +18,7 @@ public class Main {
     public static void main(String[] args) {
 
         int cantEntrenamientos = 0;
-        int cantJuegos = 2;
+        int cantJuegos = 10;
         int cantExperimentos = 10;
         double victoriasJugador0Acum = 0;
         double empatesJugador0Acum = 0;
@@ -30,10 +31,10 @@ public class Main {
 
         Jugador[] jugadores = new Jugador[2];
 
-//        jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
+        jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
 //        jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
 //        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, 3);
-        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
+//        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
 //        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
 //        jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
 //        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO, 3);
@@ -113,9 +114,9 @@ public class Main {
             }
             Tablero.imprimirTablero(tablero);
 
-            if (estado == Tablero.JUGADOR_NEGRO) {
+            if (estado == turnoJuego) {
                 victoriasJugador0++;
-            } else if (estado == Tablero.JUGADOR_BLANCO) {
+            } else if (estado == Tablero.jugadorOpuesto(turnoJuego)) {
                 perdidasJugador0++;
                 // 50-moves rule
             } else {
