@@ -4,6 +4,8 @@
 
 //import javax.imageio.ImageIO;
 
+import jdk.nashorn.internal.scripts.JO;
+
 import javax.swing.*;
 import javax.imageio.*;
 import javax.swing.border.CompoundBorder;
@@ -11,6 +13,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -25,9 +29,13 @@ public class TableroGUI {
     private final JLabel message = new JLabel("");
 
     private int[][] tablero;
-    int turno;
-    int pasosSinCaptura;
-    int estado;
+    private int turno;
+    private int pasosSinCaptura;
+    private int estado;
+    private Jugador[] jugadores = new Jugador[2];
+    private boolean gameStarted = false;
+    boolean noLetterProf = true;
+//    StringBuilder contrincantes = new StringBuilder();
 
     private TableroGUI() {
         inicializarGui();
@@ -48,65 +56,118 @@ public class TableroGUI {
                 nuevoTablero();
             }
         });
+
+        JComboBox opList = new JComboBox();
+        opList.setModel(new DefaultComboBoxModel(new String[] { "MinMax vs A-B", "MinMax vs. RL", "A-B vs. RL" }));
+        opList.setSelectedIndex(0);
+//        contrincantes.append(opList.getSelectedItem().toString());
+        opList.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+//                contrincantes.delete(0, contrincantes.length());
+//                contrincantes.append(opList.getSelectedItem().toString());
+            }
+        });
+
+        JTextField prof = new JTextField();
+        prof.setText("2");
+
+
         tools.add(new AbstractAction("Siguiente paso") {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                Jugador[] jugadores = new Jugador[2];
 
-                jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
-                jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
+                if (!profIsOk(prof.getText())) {
+                    JOptionPane.showMessageDialog(null, "Debe especificar una profundidad mayor a 1", "Atencion", JOptionPane.ERROR_MESSAGE);
+                } else {
+
+                    if (!gameStarted) {
+                        switch (opList.getSelectedIndex()) {
+                            case 0:
+                                jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
+                                jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, Integer.parseInt(prof.getText()));
+                                System.out.println("nM vs. A-B");
+                                break;
+                            case 1:
+                                jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
+                                jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
+                                System.out.println("nM vs. RL");
+                                break;
+                            case 2:
+                                jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
+                                jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
+                                System.out.println("A-B vs. RL");
+                                break;
+
+                        }
+                        gameStarted = true;
+                    }
+                }
+//
+//                Jugador[] jugadores = new Jugador[2];
+//
+//                jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
+//                jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
 
 //                int[][] tablero = Tablero.crearTablero();
 //                int turno = Tablero.JUGADOR_NEGRO;
 //                int turno = Tablero.JUGADOR_NEGRO;
 //                int estado = Tablero.JUEGO_CONTINUA;
 //                int pasosSinCaptura = 0;
-                boolean captura;
+                if (gameStarted) {
+                    boolean captura;
 
-                if (estado == Tablero.JUEGO_CONTINUA && pasosSinCaptura < 100) {
-                    Object[] resultado = jugadores[turno].mover(tablero);
-                    tablero = (int[][]) resultado[0];
-                    estado = (int) resultado[1];
-                    captura = (boolean) resultado[2];
+                    if (estado == Tablero.JUEGO_CONTINUA && pasosSinCaptura < 100) {
+                        Object[] resultado = jugadores[turno].mover(tablero);
+                        tablero = (int[][]) resultado[0];
+                        estado = (int) resultado[1];
+                        captura = (boolean) resultado[2];
 
-                    desplegarTablero();
-                    if (!captura) {
-                        pasosSinCaptura++;
-                    } else {
-                        pasosSinCaptura = 0;
+                        desplegarTablero();
+                        if (!captura) {
+                            pasosSinCaptura++;
+                        } else {
+                            pasosSinCaptura = 0;
+                        }
+
+                        turno = Tablero.jugadorOpuesto(turno);
+                        //                    cantJugadas++;
+                        //                    try {
+                        //                        chessBoard.doLayout();
+                        //                        sleep(100);
+                        //
+                        //                    } catch (InterruptedException e1) {
+                        //                        e1.printStackTrace();
+                        //                        System.exit(1);
+                        //                    }
                     }
 
-                    turno = Tablero.jugadorOpuesto(turno);
-//                    cantJugadas++;
-//                    try {
-//                        chessBoard.doLayout();
-//                        sleep(100);
-//
-//                    } catch (InterruptedException e1) {
-//                        e1.printStackTrace();
-//                        System.exit(1);
-//                    }
+
+                    if (estado == Tablero.JUGADOR_NEGRO) {
+                        //                    victoriasJugador0++;
+                        message.setText("Ganador: " + jugadores[0]);
+                    } else if (estado == Tablero.jugadorOpuesto(Tablero.JUGADOR_NEGRO)) {
+                        message.setText("Ganador: " + jugadores[1]);
+                        //                    perdidasJugador0++;
+                        // 50-moves rule
+                    } else if (estado != Tablero.JUEGO_CONTINUA) {
+                        message.setText("Empate");
+                        //                    empatesJugador0++;
+                    }
+
+                    desplegarTablero();
                 }
-
-
-                if (estado == Tablero.JUGADOR_NEGRO) {
-//                    victoriasJugador0++;
-                    message.setText("Ganador: " + jugadores[0]);
-                } else if (estado == Tablero.jugadorOpuesto(Tablero.JUGADOR_NEGRO)) {
-                    message.setText("Ganador: " + jugadores[1]);
-//                    perdidasJugador0++;
-                    // 50-moves rule
-                } else if (estado != Tablero.JUEGO_CONTINUA) {
-                    message.setText("Empate");
-//                    empatesJugador0++;
-                }
-
-                desplegarTablero();
             }
         });
         tools.addSeparator();
         tools.add(message);
+
+        tools.addSeparator();
+        tools.add(opList);
+
+        tools.addSeparator();
+        tools.add(prof);
 
 //        gui.add(new JLabel("?"), BorderLayout.LINE_START);
 //        gui.add(new JButton("Save"), BorderLayout.);
@@ -149,6 +210,21 @@ public class TableroGUI {
         }
     }
 
+    boolean profIsOk(String s) {
+        if (s.isEmpty()) return false;
+        else {
+            for (int i = 0; i < s.length(); i++)
+                if (!Character.isDigit(s.charAt(i)))
+                    return false;
+
+            // Todos son digitos
+            if (s.compareTo("0") == 0 || s.compareTo("1") == 0)
+                return false;
+        }
+        return true;
+    }
+
+
     private void cargarImagenes() {
         try {
             String[] image_names = {"peon_negro", "peon_blanco", "dama_negra", "dama_blanca", "fondo_negro", "fondo_blanco"};
@@ -186,6 +262,8 @@ public class TableroGUI {
         estado = Tablero.JUEGO_CONTINUA;
         message.setText("");
         desplegarTablero();
+        gameStarted = false;
+
     }
 
     /**
