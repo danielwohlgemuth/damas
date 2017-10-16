@@ -34,8 +34,6 @@ public class TableroGUI {
     private int estado;
     private Jugador[] jugadores = new Jugador[2];
     private boolean gameStarted = false;
-    boolean noLetterProf = true;
-//    StringBuilder contrincantes = new StringBuilder();
 
     private TableroGUI() {
         inicializarGui();
@@ -57,20 +55,26 @@ public class TableroGUI {
             }
         });
 
-        JComboBox opList = new JComboBox();
-        opList.setModel(new DefaultComboBoxModel(new String[] { "MinMax vs A-B", "MinMax vs. RL", "A-B vs. RL" }));
-        opList.setSelectedIndex(0);
+        JComboBox m1 = new JComboBox();
+        JComboBox m2 = new JComboBox();
+        m1.setModel(new DefaultComboBoxModel(new String[] { "MinMax", "AlfaBeta", "RL" }));
+        m2.setModel(new DefaultComboBoxModel(new String[] { "MinMax", "AlfaBeta", "RL" }));
+        m1.setSelectedIndex(0);
+        m2.setSelectedIndex(1);
 //        contrincantes.append(opList.getSelectedItem().toString());
-        opList.addItemListener(new ItemListener() {
+        m1.addItemListener(new ItemListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
-//                contrincantes.delete(0, contrincantes.length());
-//                contrincantes.append(opList.getSelectedItem().toString());
-            }
+            public void itemStateChanged(ItemEvent e) {}
+        });
+        m1.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {}
         });
 
-        JTextField prof = new JTextField();
-        prof.setText("2");
+        JTextField prof1 = new JTextField();
+        JTextField prof2 = new JTextField();
+        prof1.setText("2");
+        prof2.setText("2");
 
 
         tools.add(new AbstractAction("Siguiente paso") {
@@ -78,32 +82,47 @@ public class TableroGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if (!profIsOk(prof.getText())) {
-                    JOptionPane.showMessageDialog(null, "Debe especificar una profundidad mayor a 1", "Atencion", JOptionPane.ERROR_MESSAGE);
-                } else {
+                if (!gameStarted)
+                    if (!profIsOk(prof1.getText()) || !profIsOk(prof2.getText())) {
+                        JOptionPane.showMessageDialog(null, "Debe especificar una profundidad mayor a 1", "Atencion", JOptionPane.ERROR_MESSAGE);
+                    } else {
 
-                    if (!gameStarted) {
-                        switch (opList.getSelectedIndex()) {
+//                        if (!gameStarted) {
+                        switch (m1.getSelectedIndex()) {
                             case 0:
-                                jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
-                                jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, Integer.parseInt(prof.getText()));
-                                System.out.println("nM vs. A-B");
+                                jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof1.getText()));
+//                                jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, Integer.parseInt(prof.getText()));
                                 break;
                             case 1:
-                                jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
-                                jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
-                                System.out.println("nM vs. RL");
+                                jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof1.getText()));
+//                                jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
                                 break;
                             case 2:
-                                jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
-                                jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
-                                System.out.println("A-B vs. RL");
+//                                jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
+                                jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
                                 break;
 
                         }
+
+                        switch (m2.getSelectedIndex()) {
+                            case 0:
+                                jugadores[1] = new Minimax(Tablero.JUGADOR_BLANCO, Integer.parseInt(prof2.getText()));
+//                                jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, Integer.parseInt(prof.getText()));
+                                break;
+                            case 1:
+                                jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, Integer.parseInt(prof2.getText()));
+//                                jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
+                                break;
+                            case 2:
+//                                jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
+                                jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
+                                break;
+
+                        }
+
                         gameStarted = true;
+//                        }
                     }
-                }
 //
 //                Jugador[] jugadores = new Jugador[2];
 //
@@ -164,10 +183,16 @@ public class TableroGUI {
         tools.add(message);
 
         tools.addSeparator();
-        tools.add(opList);
+        tools.add(m1);
 
         tools.addSeparator();
-        tools.add(prof);
+        tools.add(m2);
+
+        tools.addSeparator();
+        tools.add(prof1);
+
+        tools.addSeparator();
+        tools.add(prof2);
 
 //        gui.add(new JLabel("?"), BorderLayout.LINE_START);
 //        gui.add(new JButton("Save"), BorderLayout.);
@@ -276,11 +301,19 @@ public class TableroGUI {
 
             JFrame f = new JFrame("Damas");
             f.add(cg.gui);
-            f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             f.setLocationByPlatform(true);
 
             f.pack();
+
+
+            Dimension scDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            Dimension frmDim = new Dimension(500, 430);
+            f.setBounds(scDim.width/2-frmDim.width/2,scDim.height/2-frmDim.height/2, frmDim.width, frmDim.height);
+            f.setResizable(false);
+            f.setMaximumSize(new Dimension(frmDim));
             f.setVisible(true);
+
         };
         SwingUtilities.invokeLater(r);
     }
