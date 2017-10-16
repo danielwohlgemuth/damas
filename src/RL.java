@@ -4,8 +4,12 @@
  * and open the template in the editor.
  */
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * @author daniel
@@ -13,25 +17,25 @@ import java.util.HashMap;
 public class RL implements Jugador {
 
     private HashMap<String, Double> tablaDeBusqueda;
-    private double alpha;
-    private boolean entrenar;
+    private double alpha = 0.5;
+    boolean entrenar;
     private int primerJugador;
     private int jugador;
-    private double qRate = 0.1;
+    private double qRate = 0.5;
     private int N = 1000;
     private int[][] ultimoTablero;
 
-    public RL(int jugador) {
+    RL(int jugador) {
         primerJugador = jugador;
-        tablaDeBusqueda = new HashMap<>();
-        entrenar = true;
-//        this.t = t;
         this.jugador = jugador;
+        tablaDeBusqueda = new HashMap<>();
+        entrenar = false;
+        ultimoTablero = Tablero.crearTablero();
     }
 
     @Override
     public String toString() {
-        return "Reinforment Learning["+primerJugador+"]";
+        return "Reinforment Learning[" + primerJugador + "]";
     }
 
     @Override
@@ -39,35 +43,29 @@ public class RL implements Jugador {
         this.jugador = jugador;
     }
 
-    //    @Override
-//    public void resetear(boolean entrenar) {
-//        this.entrenar = entrenar;
+    //        @Override
+    void resetear(boolean entrenar) {
+        this.entrenar = entrenar;
 //        ultimoTablero = t.tablero;
-//    }
-//
-//    @Override
-    public void finalizar(int[][] tablero, int estado) {
-        if(estado != jugador && entrenar) {//perdimos, actualizar tablero
+    }
+
+    //    @Override
+    void finalizar(int estado) {
+//    public void finalizar(int[][] tablero, int estado) {
+//        if (estado != jugador && entrenar) {//perdimos, actualizar tablero
+        if (estado == jugador) {
+            updateProbability(ultimoTablero, 1, jugador);
+        } else {
             updateProbability(ultimoTablero, 0, jugador);
         }
     }
-
-//        Si no hay mas fichas blancas, gana jugador 1 (negro)
-//        Si no hay mas fichas negras, gana jugador 2 (blanco)
-//        Si es el turno de jugador 1 y no puede moverse, pierde
-//        Si es el turno de jugador 2 y no puede moverse, pierde
-//        Continua para el resto
-//    }
-
-//    public int[][] mover(int[][] tablero) {
-//        return new int[1][1];
-//    }
 
     @Override
     public Object[] mover(int[][] tablero) {
 
         double prob;
         int[][] tableroCandidato = null;
+        int posTableroCandidato = 0;
         double maxProb = Integer.MIN_VALUE;
         double q;
 
@@ -86,20 +84,21 @@ public class RL implements Jugador {
             //entrenar
             if (q <= qRate || !entrenar) {
                 for (int[][] posibleTablero : posiblesTableros) {
-                    prob = calculateReward(posibleTablero, jugador);
+                    prob = calculateReward(posibleTablero);
                     if (prob > maxProb) {
                         maxProb = prob;
                         tableroCandidato = posibleTablero;
                     }
                 }
 
+                if (entrenar) {
+                    updateProbability(ultimoTablero, maxProb, jugador);
+                }
             } else {
                 tableroCandidato = posiblesTableros.get((int) (Math.random() * posiblesTableros.size()));
             }
 
-            if (entrenar) {
-                updateProbability(ultimoTablero, maxProb, jugador);
-            }
+            captura = tablerosConCaptura.get(tableroCandidato);
 
             //aplicar jugada
             ultimoTablero = tablero;
@@ -112,17 +111,12 @@ public class RL implements Jugador {
         } else {
             updateProbability(ultimoTablero, 0.0, jugador);
         }
-//        t.imprimirTablero();
 
         return new Object[]{tablero, estado, captura};
     }
 
-    private double calculateReward(int[][] tablero, int jugador) {
+    private double calculateReward(int[][] tablero) {
 
-//        int oponente = ;
-
-//        int estadoAnterior = estado;
-//        Tablero.generarMovimientos(tablero, jugador);
         Object[] resultado = Tablero.generarMovimientos(tablero, this.jugador);
         @SuppressWarnings("unchecked")
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
@@ -130,10 +124,6 @@ public class RL implements Jugador {
         @SuppressWarnings("unchecked")
         HashMap<int[][], Boolean> tablerosConCaptura = (HashMap<int[][], Boolean>) resultado[2];
         boolean captura = false;
-
-//        int result = calculateResult(tablero);
-//        int result = estado;
-//        t.estado = estadoAnterior;
 
         // Gano el jugador
         if (estado == jugador) {
@@ -161,7 +151,7 @@ public class RL implements Jugador {
 
     private void updateProbability(int[][] tablero, double nextStateProb, int jugador) {
 
-        double prob = calculateReward(tablero, jugador);
+        double prob = calculateReward(tablero);
 
         prob = prob + alpha * (nextStateProb - prob);
 
@@ -169,16 +159,48 @@ public class RL implements Jugador {
         tablaDeBusqueda.put(tableroSerializado, prob);
     }
 
-    public void updateAlpha(int currentGame) {
-
-        this.alpha = 0.5 - 0.49 * currentGame / this.N;
-    }
+//    public void updateAlpha(int currentGame) {
+//
+//        this.alpha = 0.5 - 0.49 * currentGame / this.N;
+//    }
 
     public void imprimirTablaDeBusqueda() {
 
         for (String key : tablaDeBusqueda.keySet()) {
             System.out.println("Tablero: " + key + ", prob: " + tablaDeBusqueda.get(key));
             Tablero.imprimirTablero(Tablero.deserializar(key));
+        }
+    }
+
+    void guardarTablaDeBusqueda() {
+        Properties properties = new Properties();
+
+        for (HashMap.Entry<String, Double> entry : tablaDeBusqueda.entrySet()) {
+            properties.put(entry.getKey(), entry.getValue().toString());
+        }
+        try {
+            properties.store(new FileOutputStream("DatosRL.txt"), null);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    void recuperarTablaDeBusqueda() {
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream("DatosRL.txt"));
+        } catch (java.io.IOException e) {
+            try {
+                properties.store(new FileOutputStream("DatosRL.txt"), null);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        for (String key : properties.stringPropertyNames()) {
+            tablaDeBusqueda.put(key, Double.parseDouble(properties.get(key).toString()));
         }
     }
 }

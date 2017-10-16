@@ -17,56 +17,112 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        int cantEntrenamientos = 0;
+        int cantEntrenamientos = 10000;
         int cantJuegos = 10;
         int cantExperimentos = 10;
         double victoriasJugador0Acum = 0;
         double empatesJugador0Acum = 0;
         double perdidasJugador0Acum = 0;
         double jugadasProm = 0;
-
-        Tablero t = new Tablero();
+        int turnoJuego = Tablero.JUGADOR_NEGRO;
         int[][] tablero;// = Tablero.crearTablero();
-//        Tablero.printTablero(tablero);
 
         Jugador[] jugadores = new Jugador[2];
 
-        jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
-//        jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
-//        jugadores[0] = new Minimax(Tablero.JUGADOR_NEGRO, 3);
-//        jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
-//        jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
-//        jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
-//        jugadores[1] = new Minimax( Tablero.JUGADOR_BLANCO, 3);
-        jugadores[1] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
+//        jugadores[Tablero.JUGADOR_NEGRO] = new Random(Tablero.JUGADOR_NEGRO);
+//        jugadores[Tablero.JUGADOR_NEGRO] = new RL(Tablero.JUGADOR_NEGRO);
+//        jugadores[Tablero.JUGADOR_NEGRO] = new Minimax(Tablero.JUGADOR_NEGRO, 3);
+        jugadores[Tablero.JUGADOR_NEGRO] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
+//        jugadores[Tablero.JUGADOR_BLANCO] = new Random(Tablero.JUGADOR_BLANCO);
+        jugadores[Tablero.JUGADOR_BLANCO] = new RL(Tablero.JUGADOR_BLANCO);
+//        jugadores[Tablero.JUGADOR_BLANCO] = new Minimax( Tablero.JUGADOR_BLANCO, 3);
+//        jugadores[Tablero.JUGADOR_BLANCO] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
 
-//        for (int x = 0; x < cantEntrenamientos; x++) {
-//            t.resetear();
-//            tablero = Tablero.crearTablero();
+        //noinspection ConstantConditions
+        if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL || jugadores[Tablero.JUGADOR_BLANCO] instanceof RL) {
 
-//            int turno = Tablero.JUGADOR_NEGRO;
-//            int i = 0;
-//            t.imprimirTablero();
+            // Solo carga la tabla de busqueda de uno
+            if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL) {
+                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).entrenar = true;
+                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).recuperarTablaDeBusqueda();
+            }
+            if (jugadores[Tablero.JUGADOR_BLANCO] instanceof RL) {
+                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).entrenar = true;
+                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).recuperarTablaDeBusqueda();
+            }
 
-//            while (estado == Tablero.JUEGO_CONTINUA) {
-//                jugadores[turno].mover();
-//                turno = (turno + 1) % 2;
-//                i++;
-//                System.out.println(i);
-//                t.imprimirTablero();
-//            }
-//
-//            if (estado == Tablero.JUGADOR_BLANCO) {
-//                jugadores[0].finalizar();
-//            } else {
-//                jugadores[1].finalizar();
-//            }
-//        }
+            for (int x = 0; x < cantEntrenamientos; x++) {
+
+                tablero = Tablero.crearTablero();
+
+//            jugadores[Tablero.JUGADOR_NEGRO].resetear(false);
+//            jugadores[Tablero.JUGADOR_BLANCO].resetear(false);
+
+                int turno = turnoJuego;
+//                int cantJugadas = 0;
+                int estado = Tablero.JUEGO_CONTINUA;
+                int pasosSinCaptura = 0;
+                boolean captura;
+//                Tablero.imprimirTablero(tablero);
+//                System.out.println("Turno: "+turno);
+
+                jugadores[Tablero.JUGADOR_NEGRO].setJugador(turno);
+                jugadores[Tablero.JUGADOR_BLANCO].setJugador(Tablero.jugadorOpuesto(turno));
+
+                while (estado == Tablero.JUEGO_CONTINUA && pasosSinCaptura < 100) {
+                    Object[] resultado = jugadores[turno].mover(tablero);
+                    tablero = (int[][]) resultado[0];
+                    estado = (int) resultado[1];
+                    captura = (boolean) resultado[2];
+
+                    if (!captura) {
+                        pasosSinCaptura++;
+                    } else {
+                        pasosSinCaptura = 0;
+                    }
+
+                    turno = Tablero.jugadorOpuesto(turno);
+//                    cantJugadas++;
+//                    System.out.println(cantJugadas);
+//                    Tablero.imprimirTablero(tablero);
+                }
+//                Tablero.imprimirTablero(tablero);
+
+//                if (estado == turnoJuego) {
+//                    if (jugadores[Tablero.jugadorOpuesto(turnoJuego)] instanceof RL) {
+//                        ((RL) jugadores[Tablero.jugadorOpuesto(turnoJuego)]).finalizar();
+//                    }
+                // El oponente gano o 50-moves rule
+//                } else {
+                if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL) {
+                    ((RL) jugadores[Tablero.JUGADOR_NEGRO]).finalizar(estado);
+                }
+                if (jugadores[Tablero.JUGADOR_BLANCO] instanceof RL) {
+                    ((RL) jugadores[Tablero.JUGADOR_BLANCO]).finalizar(estado);
+                }
+//                }
+
+//                jugadasProm += (double) cantJugadas / cantJuegos;
+                turnoJuego = Tablero.jugadorOpuesto(turnoJuego);
+            }
+
+            // Guarda y desactiva el aprendizaje RL
+            if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL) {
+                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).entrenar = false;
+//                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).imprimirTablaDeBusqueda();
+                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).guardarTablaDeBusqueda();
+            }
+            if (jugadores[Tablero.JUGADOR_BLANCO] instanceof RL) {
+                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).entrenar = false;
+//                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).imprimirTablaDeBusqueda();
+                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).guardarTablaDeBusqueda();
+            }
+        }
 
         int victoriasJugador0 = 0;
         int empatesJugador0 = 0;
         int perdidasJugador0 = 0;
-        int turnoJuego = Tablero.JUGADOR_NEGRO;
+        turnoJuego = Tablero.JUGADOR_NEGRO;
 
 //        if (jugadores[0] instanceof RL) {
 //            System.out.println("RL0");
@@ -76,11 +132,7 @@ public class Main {
 //        }
 
         for (int x = 0; x < cantJuegos; x++) {
-//            t.resetear();
             tablero = Tablero.crearTablero();
-
-//            jugadores[0].resetear(false);
-//            jugadores[1].resetear(false);
 
             int turno = turnoJuego;
             int cantJugadas = 0;
@@ -91,8 +143,8 @@ public class Main {
 
 //            System.out.println("Turno: "+turno);
 
-            jugadores[0].setJugador(turno);
-            jugadores[1].setJugador(Tablero.jugadorOpuesto(turno));
+            jugadores[Tablero.JUGADOR_NEGRO].setJugador(turno);
+            jugadores[Tablero.JUGADOR_BLANCO].setJugador(Tablero.jugadorOpuesto(turno));
 
 
             while (estado == Tablero.JUEGO_CONTINUA && pasosSinCaptura < 100) {

@@ -82,7 +82,7 @@ class Tablero {
 
         int valor;
         int[][] tablero = new int[8][8];
-        for (int i = 0; i < tableroSerializado.length(); i++) {
+        for (int i = 0; i < tableroSerializado.length()-1; i++) {
 
             valor = Integer.parseInt(tableroSerializado.charAt(i) + "");
             tablero[i / 8][i % 8] = valor;
