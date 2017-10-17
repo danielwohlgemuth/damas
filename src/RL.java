@@ -85,6 +85,7 @@ public class RL implements Jugador {
             if (q <= qRate || !entrenar) {
                 for (int[][] posibleTablero : posiblesTableros) {
                     prob = calculateReward(posibleTablero);
+//                    prob = getProbability(posibleTablero);
                     if (prob > maxProb) {
                         maxProb = prob;
                         tableroCandidato = posibleTablero;
@@ -105,19 +106,22 @@ public class RL implements Jugador {
             tablero = tableroCandidato;
 
             // Gano el jugador
-        } else if (estado == jugador) {
-            updateProbability(ultimoTablero, 1.0, jugador);
+//        } else if (estado == jugador) {
+//            updateProbability(ultimoTablero, 1.0, jugador);
             // Gano el oponente
-        } else {
-            updateProbability(ultimoTablero, 0.0, jugador);
+//        } else {
+//            updateProbability(ultimoTablero, 0.0, jugador);
         }
+
+        resultado = Tablero.generarMovimientos(tablero, Tablero.jugadorOpuesto(this.jugador));
+        estado = (int) resultado[1];
 
         return new Object[]{tablero, estado, captura};
     }
 
     private double calculateReward(int[][] tablero) {
 
-        Object[] resultado = Tablero.generarMovimientos(tablero, this.jugador);
+        Object[] resultado = Tablero.generarMovimientos(tablero, Tablero.jugadorOpuesto(this.jugador));
         @SuppressWarnings("unchecked")
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
         int estado = (int) resultado[1];
@@ -151,7 +155,8 @@ public class RL implements Jugador {
 
     private void updateProbability(int[][] tablero, double nextStateProb, int jugador) {
 
-        double prob = calculateReward(tablero);
+//        double prob = calculateReward(tablero);
+        double prob = getProbability(tablero);
 
         prob = prob + alpha * (nextStateProb - prob);
 

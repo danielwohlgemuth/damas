@@ -64,6 +64,9 @@ public class Minimax implements Jugador {
             captura = tablerosConCaptura.get(tablero);
         }
 
+        resultado = Tablero.generarMovimientos(tablero, Tablero.jugadorOpuesto(this.jugador));
+        estado = (int) resultado[1];
+
         return new Object[]{tablero, estado, captura};
     }
 

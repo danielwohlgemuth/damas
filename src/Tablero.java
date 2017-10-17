@@ -354,7 +354,6 @@ class Tablero {
             }
         }
         return fichasRestantes[jugador] - fichasRestantes[(jugador + 1) % 2];
-
     }
 
     static int jugadorOpuesto(int jugador) {

@@ -17,7 +17,7 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        int cantEntrenamientos = 10000;
+        int cantEntrenamientos = 1000;
         int cantJuegos = 10;
         int cantExperimentos = 10;
         double victoriasJugador0Acum = 0;
@@ -59,7 +59,7 @@ public class Main {
 //            jugadores[Tablero.JUGADOR_BLANCO].resetear(false);
 
                 int turno = turnoJuego;
-//                int cantJugadas = 0;
+                int cantJugadas = 0;
                 int estado = Tablero.JUEGO_CONTINUA;
                 int pasosSinCaptura = 0;
                 boolean captura;
