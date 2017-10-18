@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * @author daniel
+ * @author Daniel Min
+ * @author Daniel Wohlgemuth
  */
 public class AlphaBeta implements Jugador {
 

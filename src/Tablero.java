@@ -9,33 +9,19 @@ import java.util.HashMap;
  */
 
 /**
- * @author daniel
+ * @author Daniel Min
+ * @author Daniel Wohlgemuth
  */
 class Tablero {
     static final int JUGADOR_NEGRO = 0;
     static final int JUGADOR_BLANCO = 1;
     static final int JUEGO_CONTINUA = 2;
-//    static final int JUEGO_EMPATADO = 3;
 
     static final int PEON_NEGRO = 0;
     static final int PEON_BLANCO = 1;
     static final int DAMA_NEGRA = 2;
     static final int DAMA_BLANCA = 3;
     static final int VACIO = 4;
-
-    // Negro ganador: 0, Blanco ganador: 1, En curso: 2
-//    int estado;
-//    int[][] tablero;
-
-//    Tablero() {
-//        estado = Tablero.JUEGO_CONTINUA;
-//        tablero = Tablero.crearTablero();
-//    }
-//
-//    void resetear() {
-//        tablero = crearTablero();
-//        estado = Tablero.JUEGO_CONTINUA;
-//    }
 
     // 3 primeras filas blancas, 3 ultimas filas negras
     static int[][] crearTablero() {
@@ -64,16 +50,17 @@ class Tablero {
         return tablero;
     }
 
-    static String serializarTablero(int[][] tablero, int jugador) {
+    static String serializarTablero(int[][] tablero) {
 
         StringBuilder tableroSerializado = new StringBuilder();
-        for (int[] aTablero : tablero) {
+        for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[0].length; j++) {
-
-                tableroSerializado.append(aTablero[j]);
+                // Guarda solo los campos relevantes, no los siempre vacios
+                if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
+                    tableroSerializado.append(tablero[i][j]);
+                }
             }
         }
-        tableroSerializado.append(jugador);
 
         return tableroSerializado.toString();
     }
@@ -81,19 +68,31 @@ class Tablero {
     static int[][] deserializar(String tableroSerializado) {
 
         int valor;
+        int divI;
+        int modI;
         int[][] tablero = new int[8][8];
-        for (int i = 0; i < tableroSerializado.length()-1; i++) {
 
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                tablero[i][j] = Tablero.VACIO;
+            }
+        }
+
+        for (int i = 0; i < tableroSerializado.length(); i++) {
             valor = Integer.parseInt(tableroSerializado.charAt(i) + "");
-            tablero[i / 8][i % 8] = valor;
+
+            divI = i / 4;
+            modI = i % 4;
+            // Filas impares
+            if (divI % 2 == 0) {
+                tablero[divI][modI * 2 + 1] = valor;
+            } else {
+                tablero[divI][modI * 2] = valor;
+            }
         }
 
         return tablero;
     }
-
-//    void imprimirTablero() {
-//        Tablero.imprimirTablero(tablero);
-//    }
 
     static void imprimirTablero(int[][] tablero) {
 
@@ -151,7 +150,6 @@ class Tablero {
     static Object[] generarMovimientos(int[][] tablero, int jugador) {
         // N: Norte, E: Este, S: Sur, O: Oeste
         // Las direcciones en sentido horario: NE, SE, SO, NO
-//        int[][] tablero = t.tablero;
         ArrayList<int[][]> tablerosPosibles = new ArrayList<>();
         HashMap<int[][], Boolean> tablerosConCaptura = new HashMap<>();
         int oponente = Tablero.jugadorOpuesto(jugador);
@@ -202,8 +200,6 @@ class Tablero {
                         if (posicionValida(x1, y1)) {
                             // Posicion vacia
                             if (!capturaRealizada && tablero[x1][y1] == Tablero.VACIO) {
-//                                System.out.println("mov");
-//                                System.out.println(" x:"+x+" y:"+y+" x1:"+x1+" y1:"+y1+" x2:"+x2+" y2:"+y2);
                                 tableroModificado = crearTableroModificado(tablero, x, y, x1, y1);
                                 convertirEnDama(tableroModificado, x1, y1, jugador);
                                 tablerosPosibles.add(tableroModificado);
@@ -213,7 +209,6 @@ class Tablero {
                                     && posicionValida(x2, y2) && tablero[x2][y2] == Tablero.VACIO) {
                                 if (!capturaRealizada) {
                                     capturaRealizada = true;
-//                                    System.out.println("del");
                                     // Vaciar la lista
                                     tablerosPosibles = new ArrayList<>();
                                 }
@@ -222,9 +217,6 @@ class Tablero {
 
                                 // No se convirtio en dama
                                 if (!convertirEnDama(tableroModificado, x2, y2, jugador)) {
-
-//                                    System.out.println("cap");
-//                                    System.out.println(" x:"+x+" y:"+y+" x1:"+x1+" y1:"+y1+" x2:"+x2+" y2:"+y2);
                                     masCapturas(tablerosPosibles, tablerosConCaptura, tableroModificado, x2, y2, jugador);
                                 } else {
                                     tablerosPosibles.add(tableroModificado);
@@ -298,14 +290,9 @@ class Tablero {
             if (posicionValida(x1, y1) && tablero[x1][y1] != Tablero.VACIO && tablero[x1][y1] % 2 == oponente
                     && posicionValida(x2, y2) && tablero[x2][y2] == Tablero.VACIO) {
                 capturaRealizada = true;
-
-//                System.out.println("cap1");
-//                System.out.println(" x:"+x+" y:"+y+" x1:"+x1+" y1:"+y1+" x2:"+x2+" y2:"+y2);
                 tableroModificado = crearTableroModificado(tablero, x, y, x2, y2);
                 // No se convirtio en dama
                 if (!convertirEnDama(tableroModificado, x2, y2, jugador)) {
-
-//                    System.out.println("cap2");
                     masCapturas(tablerosPosibles, tablerosConCaptura, tableroModificado, x2, y2, jugador);
                 } else {
                     tablerosPosibles.add(tableroModificado);
@@ -325,17 +312,13 @@ class Tablero {
     }
 
     private static boolean convertirEnDama(int[][] tablero, int x, int y, int jugador) {
-//        System.out.println("dama");
-//        System.out.println("x:"+x+"y:"+y);
         // Jugador negro
         if (jugador == Tablero.JUGADOR_NEGRO && tablero[x][y] == Tablero.PEON_NEGRO && x == 0) {
             tablero[x][y] = Tablero.DAMA_NEGRA;
-//            System.out.println("t");
             return true;
             // Jugador blanco
         } else if (jugador == Tablero.JUGADOR_BLANCO && tablero[x][y] == Tablero.PEON_BLANCO && x == 7) {
             tablero[x][y] = Tablero.DAMA_BLANCA;
-//            System.out.println("t");
             return true;
         }
 

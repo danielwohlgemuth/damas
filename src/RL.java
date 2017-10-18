@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.Properties;
 
 /**
- * @author daniel
+ * @author Daniel Min
+ * @author Daniel Wohlgemuth
  */
 public class RL implements Jugador {
 
@@ -22,7 +23,7 @@ public class RL implements Jugador {
     private int primerJugador;
     private int jugador;
     private double qRate = 0.5;
-    private int N = 1000;
+//    private int N = 1000;
     private int[][] ultimoTablero;
 
     RL(int jugador) {
@@ -44,19 +45,16 @@ public class RL implements Jugador {
     }
 
     //        @Override
-    void resetear(boolean entrenar) {
-        this.entrenar = entrenar;
-//        ultimoTablero = t.tablero;
-    }
+//    void resetear(boolean entrenar) {
+//        this.entrenar = entrenar;
+//    }
 
     //    @Override
     void finalizar(int estado) {
-//    public void finalizar(int[][] tablero, int estado) {
-//        if (estado != jugador && entrenar) {//perdimos, actualizar tablero
         if (estado == jugador) {
-            updateProbability(ultimoTablero, 1, jugador);
+            updateProbability(ultimoTablero, 1);
         } else {
-            updateProbability(ultimoTablero, 0, jugador);
+            updateProbability(ultimoTablero, 0);
         }
     }
 
@@ -65,11 +63,9 @@ public class RL implements Jugador {
 
         double prob;
         int[][] tableroCandidato = null;
-        int posTableroCandidato = 0;
         double maxProb = Integer.MIN_VALUE;
         double q;
 
-//        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(t, jugador);
         Object[] resultado = Tablero.generarMovimientos(tablero, this.jugador);
         @SuppressWarnings("unchecked")
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
@@ -93,7 +89,7 @@ public class RL implements Jugador {
                 }
 
                 if (entrenar) {
-                    updateProbability(ultimoTablero, maxProb, jugador);
+                    updateProbability(ultimoTablero, maxProb);
                 }
             } else {
                 tableroCandidato = posiblesTableros.get((int) (Math.random() * posiblesTableros.size()));
@@ -101,16 +97,8 @@ public class RL implements Jugador {
 
             captura = tablerosConCaptura.get(tableroCandidato);
 
-            //aplicar jugada
             ultimoTablero = tablero;
             tablero = tableroCandidato;
-
-            // Gano el jugador
-//        } else if (estado == jugador) {
-//            updateProbability(ultimoTablero, 1.0, jugador);
-            // Gano el oponente
-//        } else {
-//            updateProbability(ultimoTablero, 0.0, jugador);
         }
 
         resultado = Tablero.generarMovimientos(tablero, Tablero.jugadorOpuesto(this.jugador));
@@ -122,12 +110,7 @@ public class RL implements Jugador {
     private double calculateReward(int[][] tablero) {
 
         Object[] resultado = Tablero.generarMovimientos(tablero, Tablero.jugadorOpuesto(this.jugador));
-        @SuppressWarnings("unchecked")
-        ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
         int estado = (int) resultado[1];
-        @SuppressWarnings("unchecked")
-        HashMap<int[][], Boolean> tablerosConCaptura = (HashMap<int[][], Boolean>) resultado[2];
-        boolean captura = false;
 
         // Gano el jugador
         if (estado == jugador) {
@@ -143,24 +126,32 @@ public class RL implements Jugador {
 
     private double getProbability(int[][] tablero) {
 
-        String tableroSerializado = Tablero.serializarTablero(tablero, this.jugador);
+        String tableroSerializado = Tablero.serializarTablero(tablero);
 
         //si aun no contiene la tabla, insertar con valor inicial 0.5
         if (!tablaDeBusqueda.containsKey(tableroSerializado)) {
             tablaDeBusqueda.put(tableroSerializado, 0.5);
         }
 
-        return tablaDeBusqueda.get(tableroSerializado);
+        if (this.jugador == Tablero.JUGADOR_NEGRO) {
+            return tablaDeBusqueda.get(tableroSerializado);
+        } else {
+            return 1 - tablaDeBusqueda.get(tableroSerializado);
+        }
+
     }
 
-    private void updateProbability(int[][] tablero, double nextStateProb, int jugador) {
+    private void updateProbability(int[][] tablero, double nextStateProb) {
 
-//        double prob = calculateReward(tablero);
         double prob = getProbability(tablero);
+
+        if (this.jugador == Tablero.JUGADOR_BLANCO) {
+            nextStateProb = 1 - nextStateProb;
+        }
 
         prob = prob + alpha * (nextStateProb - prob);
 
-        String tableroSerializado = Tablero.serializarTablero(tablero, this.jugador);
+        String tableroSerializado = Tablero.serializarTablero(tablero);
         tablaDeBusqueda.put(tableroSerializado, prob);
     }
 
@@ -179,6 +170,7 @@ public class RL implements Jugador {
 
     void guardarTablaDeBusqueda() {
         Properties properties = new Properties();
+        System.out.println("Guardando...");
 
         for (HashMap.Entry<String, Double> entry : tablaDeBusqueda.entrySet()) {
             properties.put(entry.getKey(), entry.getValue().toString());

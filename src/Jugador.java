@@ -5,8 +5,8 @@
  */
 
 /**
- *
- * @author daniel
+ * @author Daniel Min
+ * @author Daniel Wohlgemuth
  */
 public interface Jugador {
     Object[] mover(int[][] tablero);

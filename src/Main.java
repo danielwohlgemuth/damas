@@ -8,7 +8,8 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 /**
- * @author daniel
+ * @author Daniel Min
+ * @author Daniel Wohlgemuth
  */
 public class Main {
 
@@ -17,29 +18,29 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        int cantEntrenamientos = 1000;
-        int cantJuegos = 10;
-        int cantExperimentos = 10;
+        int cantEntrenamientos = 10000;
+        int cantJuegos = 100;
+//        int cantExperimentos = 10;
         double victoriasJugador0Acum = 0;
         double empatesJugador0Acum = 0;
         double perdidasJugador0Acum = 0;
         double jugadasProm = 0;
         int turnoJuego = Tablero.JUGADOR_NEGRO;
-        int[][] tablero;// = Tablero.crearTablero();
+        int[][] tablero;
 
         Jugador[] jugadores = new Jugador[2];
 
-//        jugadores[Tablero.JUGADOR_NEGRO] = new Random(Tablero.JUGADOR_NEGRO);
+        jugadores[Tablero.JUGADOR_NEGRO] = new Random(Tablero.JUGADOR_NEGRO);
 //        jugadores[Tablero.JUGADOR_NEGRO] = new RL(Tablero.JUGADOR_NEGRO);
 //        jugadores[Tablero.JUGADOR_NEGRO] = new Minimax(Tablero.JUGADOR_NEGRO, 3);
-        jugadores[Tablero.JUGADOR_NEGRO] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
+//        jugadores[Tablero.JUGADOR_NEGRO] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
 //        jugadores[Tablero.JUGADOR_BLANCO] = new Random(Tablero.JUGADOR_BLANCO);
         jugadores[Tablero.JUGADOR_BLANCO] = new RL(Tablero.JUGADOR_BLANCO);
 //        jugadores[Tablero.JUGADOR_BLANCO] = new Minimax( Tablero.JUGADOR_BLANCO, 3);
 //        jugadores[Tablero.JUGADOR_BLANCO] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
 
         //noinspection ConstantConditions
-        if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL || jugadores[Tablero.JUGADOR_BLANCO] instanceof RL) {
+        if (cantEntrenamientos > 0 && (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL || jugadores[Tablero.JUGADOR_BLANCO] instanceof RL)) {
 
             // Solo carga la tabla de busqueda de uno
             if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL) {
@@ -54,9 +55,6 @@ public class Main {
             for (int x = 0; x < cantEntrenamientos; x++) {
 
                 tablero = Tablero.crearTablero();
-
-//            jugadores[Tablero.JUGADOR_NEGRO].resetear(false);
-//            jugadores[Tablero.JUGADOR_BLANCO].resetear(false);
 
                 int turno = turnoJuego;
                 int cantJugadas = 0;
@@ -88,21 +86,13 @@ public class Main {
                 }
 //                Tablero.imprimirTablero(tablero);
 
-//                if (estado == turnoJuego) {
-//                    if (jugadores[Tablero.jugadorOpuesto(turnoJuego)] instanceof RL) {
-//                        ((RL) jugadores[Tablero.jugadorOpuesto(turnoJuego)]).finalizar();
-//                    }
-                // El oponente gano o 50-moves rule
-//                } else {
                 if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL) {
                     ((RL) jugadores[Tablero.JUGADOR_NEGRO]).finalizar(estado);
                 }
                 if (jugadores[Tablero.JUGADOR_BLANCO] instanceof RL) {
                     ((RL) jugadores[Tablero.JUGADOR_BLANCO]).finalizar(estado);
                 }
-//                }
 
-//                jugadasProm += (double) cantJugadas / cantJuegos;
                 turnoJuego = Tablero.jugadorOpuesto(turnoJuego);
             }
 
@@ -110,12 +100,16 @@ public class Main {
             if (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL) {
                 ((RL) jugadores[Tablero.JUGADOR_NEGRO]).entrenar = false;
 //                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).imprimirTablaDeBusqueda();
-                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).guardarTablaDeBusqueda();
+                if (cantEntrenamientos < 100000) {
+                    ((RL) jugadores[Tablero.JUGADOR_NEGRO]).guardarTablaDeBusqueda();
+                }
             }
             if (jugadores[Tablero.JUGADOR_BLANCO] instanceof RL) {
                 ((RL) jugadores[Tablero.JUGADOR_BLANCO]).entrenar = false;
 //                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).imprimirTablaDeBusqueda();
-                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).guardarTablaDeBusqueda();
+                if (cantEntrenamientos < 100000) {
+                    ((RL) jugadores[Tablero.JUGADOR_BLANCO]).guardarTablaDeBusqueda();
+                }
             }
         }
 
@@ -123,13 +117,6 @@ public class Main {
         int empatesJugador0 = 0;
         int perdidasJugador0 = 0;
         turnoJuego = Tablero.JUGADOR_NEGRO;
-
-//        if (jugadores[0] instanceof RL) {
-//            System.out.println("RL0");
-//        }
-//        if (jugadores[1] instanceof RL) {
-//            System.out.println("RL1");
-//        }
 
         for (int x = 0; x < cantJuegos; x++) {
             tablero = Tablero.crearTablero();
@@ -203,8 +190,3 @@ public class Main {
 //        };
 
 
-//        Tablero.printTablero(tablero);
-//        ArrayList<int [][]> posiblesTableros = Tablero.generarMovimientos(tablero, Tablero.JUGADOR_NEGRO);
-//        for (int i = 0; i < posiblesTableros.size(); i++) {
-//            Tablero.printTablero(posiblesTableros.get(i));
-//        }

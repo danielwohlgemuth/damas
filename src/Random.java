@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * @author daniel
+ * @author Daniel Min
+ * @author Daniel Wohlgemuth
  */
 public class Random implements Jugador {
 
@@ -22,7 +23,7 @@ public class Random implements Jugador {
 
     @Override
     public String toString() {
-        return "Random["+primerJugador+"]";
+        return "Random[" + primerJugador + "]";
     }
 
     @Override
@@ -54,6 +55,6 @@ public class Random implements Jugador {
         resultado = Tablero.generarMovimientos(tablero, Tablero.jugadorOpuesto(this.jugador));
         estado = (int) resultado[1];
 
-        return new Object[] {tablero, estado, captura};
+        return new Object[]{tablero, estado, captura};
     }
 }
