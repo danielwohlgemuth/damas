@@ -55,6 +55,20 @@ public class TableroGUI {
             }
         });
 
+        JToolBar tools2 = new JToolBar();
+        tools2.setFloatable(false);
+        gui.add(tools2, BorderLayout.AFTER_LAST_LINE);
+        JTextField deserializarTxt = new JTextField();
+        tools2.add(deserializarTxt);
+        tools2.add(new AbstractAction("Deserializar") {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tablero = Tablero.deserializar(deserializarTxt.getText());
+                desplegarTablero();
+            }
+        });
+
         JComboBox m1 = new JComboBox();
         JComboBox m2 = new JComboBox();
         m1.setModel(new DefaultComboBoxModel(new String[] { "MinMax", "AlfaBeta", "RL" }));
@@ -308,7 +322,7 @@ public class TableroGUI {
 
 
             Dimension scDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-            Dimension frmDim = new Dimension(500, 430);
+            Dimension frmDim = new Dimension(500, 470);
             f.setBounds(scDim.width/2-frmDim.width/2,scDim.height/2-frmDim.height/2, frmDim.width, frmDim.height);
             f.setResizable(false);
             f.setMaximumSize(new Dimension(frmDim));
