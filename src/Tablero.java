@@ -159,8 +159,12 @@ class Tablero {
         int x1, y1, x2, y2;
         int[] fichasRestantes = new int[]{0, 0};
 
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
+        // Esto hace que todos los peones avancen
+        int inicial = jugador == Tablero.JUGADOR_NEGRO ? 7 : 0;
+        int incremento = jugador == Tablero.JUGADOR_NEGRO ? -1 : 1;
+
+        for (int x = inicial; x >= 0 && x < 8; x += incremento) {
+            for (int y = inicial; y >= 0 && y < 8; y += incremento) {
                 // Es pieza del jugador?
                 if (tablero[x][y] != Tablero.VACIO && tablero[x][y] % 2 == jugador) {
 
