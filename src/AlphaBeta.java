@@ -39,7 +39,6 @@ public class AlphaBeta implements Jugador {
 
     @Override
     public Object[] mover(int[][] tablero) {
-
         Object[] resultado = Tablero.generarMovimientos(tablero, this.jugador);
         @SuppressWarnings("unchecked")
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
@@ -48,17 +47,6 @@ public class AlphaBeta implements Jugador {
         HashMap<int[][], Boolean> tablerosConCaptura = (HashMap<int[][], Boolean>) resultado[2];
         boolean captura = false;
 
-//        ArrayList<int[][]> posiblesTableros = Tablero.generarMovimientos(t, this.jugador);
-
-//        System.out.println("Posibles");
-//        for (int[][] posibleTablero : posiblesTableros) {
-//            Tablero.imprimirTablero(posibleTablero);
-//        }
-//        System.out.println("Fin posibles");
-
-//        int[][] tableroCandidato = null;
-//        int estadoAnterior = t.estado;
-
         if (posiblesTableros.size() != 0 && estado == Tablero.JUEGO_CONTINUA) {
             int alpha = Integer.MIN_VALUE;
             int beta = Integer.MAX_VALUE;
@@ -66,16 +54,12 @@ public class AlphaBeta implements Jugador {
             int valorActual;
 
             for (int[][] posibleTablero : posiblesTableros) {
-//                System.out.println("Max 0 Posible");
-//                Tablero.imprimirTablero(posibleTablero);
                 valorActual = minimax(posibleTablero, this.profundidad, alpha, beta, Tablero.jugadorOpuesto(this.jugador));
                 if (valorActual > majorValor) {
                     majorValor = valorActual;
                     tablero = posibleTablero;
                 }
             }
-//            tablero = tableroCandidato;
-//            estado = estadoAnterior;
             captura = tablerosConCaptura.get(tablero);
         }
 
@@ -91,49 +75,29 @@ public class AlphaBeta implements Jugador {
         ArrayList<int[][]> posiblesTableros = (ArrayList<int[][]>) resultado[0];
         int estado = (int) resultado[1];
 
-//        System.out.println("Actual");
-//        System.out.println("Jugador " + jugador);
-//        Tablero.imprimirTablero(tablero);
-//        System.out.println("Posibles");
-//        for (int[][] posibleTablero : posiblesTableros) {
-//            Tablero.imprimirTablero(posibleTablero);
-//        }
-//        System.out.println("Fin posibles");
-
-        int mayorValor = (jugador == this.jugador) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-//        int valorActual;
-
         if (posiblesTableros.size() == 0 || estado != Tablero.JUEGO_CONTINUA || profundidad == 0) {
-//            if (jugador == this.jugador) {
-            mayorValor = Tablero.heuristica(tablero, this.jugador);
+            return Tablero.heuristica(tablero, this.jugador);
+        }
 
-//            System.out.println("Heuristica " + mayorValor);
-//            System.out.println("Jugador " + jugador);
+        int v = (jugador == this.jugador) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+
+        if (jugador == this.jugador) {
+            for (int[][] posibleTablero : posiblesTableros) {
+                v = Math.max(v, minimax(posibleTablero, profundidad - 1, alpha, beta, Tablero.jugadorOpuesto(this.jugador)));
+                if (beta <= v) {
+                    break;
+                }
+                alpha = Math.max(alpha, v);
+            }
         } else {
-            if (jugador == this.jugador) {
-                for (int[][] posibleTablero : posiblesTableros) {
-//                    System.out.println("Max Posible");
-//                    Tablero.imprimirTablero(tablero);
-                    mayorValor = Math.max(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, Tablero.jugadorOpuesto(this.jugador)));
-                    alpha = Math.max(alpha, mayorValor);
-//                    System.out.println("Max mayor " + mayorValor);
-                    if (beta <= mayorValor) {
-                        break;
-                    }
+            for (int[][] posibleTablero : posiblesTableros) {
+                v = Math.min(v, minimax(posibleTablero, profundidad - 1, alpha, beta, this.jugador));
+                if (v <= alpha) {
+                    return v;
                 }
-            } else {
-                for (int[][] posibleTablero : posiblesTableros) {
-//                    System.out.println("Min Posible");
-//                    Tablero.imprimirTablero(tablero);
-                    mayorValor = Math.min(mayorValor, minimax(posibleTablero, profundidad - 1, alpha, beta, this.jugador));
-                    beta = Math.min(beta, mayorValor);
-//                    System.out.println("Min mayor " + mayorValor);
-                    if (mayorValor <= alpha) {
-                        break;
-                    }
-                }
+                beta = Math.min(beta, v);
             }
         }
-        return mayorValor;
+        return v;
     }
 }
