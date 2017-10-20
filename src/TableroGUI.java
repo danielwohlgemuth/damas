@@ -71,8 +71,8 @@ public class TableroGUI {
 
         JComboBox m1 = new JComboBox();
         JComboBox m2 = new JComboBox();
-        m1.setModel(new DefaultComboBoxModel(new String[] { "MinMax", "AlfaBeta", "RL" }));
-        m2.setModel(new DefaultComboBoxModel(new String[] { "MinMax", "AlfaBeta", "RL" }));
+        m1.setModel(new DefaultComboBoxModel(new String[] { "MinMax", "AlfaBeta", "RL", "Random" }));
+        m2.setModel(new DefaultComboBoxModel(new String[] { "MinMax", "AlfaBeta", "RL", "Random" }));
         m1.setSelectedIndex(0);
         m2.setSelectedIndex(1);
 //        contrincantes.append(opList.getSelectedItem().toString());
@@ -114,8 +114,11 @@ public class TableroGUI {
                             case 2:
 //                                jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
                                 jugadores[0] = new RL(Tablero.JUGADOR_NEGRO);
+                                ((RL) jugadores[Tablero.JUGADOR_NEGRO]).recuperarTablaDeBusqueda();
                                 break;
-
+                            case 3:
+                                jugadores[0] = new Random(Tablero.JUGADOR_NEGRO);
+                                break;
                         }
 
                         switch (m2.getSelectedIndex()) {
@@ -130,8 +133,11 @@ public class TableroGUI {
                             case 2:
 //                                jugadores[0] = new AlphaBeta(Tablero.JUGADOR_NEGRO, Integer.parseInt(prof.getText()));
                                 jugadores[1] = new RL(Tablero.JUGADOR_BLANCO);
+                                ((RL) jugadores[Tablero.JUGADOR_BLANCO]).recuperarTablaDeBusqueda();
                                 break;
-
+                            case 3:
+                                jugadores[1] = new Random(Tablero.JUGADOR_BLANCO);
+                                break;
                         }
 
                         gameStarted = true;
@@ -200,10 +206,10 @@ public class TableroGUI {
         tools.add(m1);
 
         tools.addSeparator();
-        tools.add(m2);
+        tools.add(prof1);
 
         tools.addSeparator();
-        tools.add(prof1);
+        tools.add(m2);
 
         tools.addSeparator();
         tools.add(prof2);
@@ -302,7 +308,7 @@ public class TableroGUI {
         message.setText("");
         desplegarTablero();
         gameStarted = false;
-
+        turno = Tablero.JUGADOR_NEGRO;
     }
 
     /**
