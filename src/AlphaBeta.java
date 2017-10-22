@@ -16,6 +16,7 @@ public class AlphaBeta implements Jugador {
     private int primerJugador;
     private int jugador;
     private int profundidad;
+    int expandidos = 0;
 
     AlphaBeta(int jugador, int profundidad) {
         primerJugador = jugador;
@@ -46,6 +47,7 @@ public class AlphaBeta implements Jugador {
         @SuppressWarnings("unchecked")
         HashMap<int[][], Boolean> tablerosConCaptura = (HashMap<int[][], Boolean>) resultado[2];
         boolean captura = false;
+        expandidos = 1;
 
         if (posiblesTableros.size() != 0 && estado == Tablero.JUEGO_CONTINUA) {
             int alpha = Integer.MIN_VALUE;
@@ -59,6 +61,7 @@ public class AlphaBeta implements Jugador {
                     majorValor = valorActual;
                     tablero = posibleTablero;
                 }
+                expandidos++;
             }
             captura = tablerosConCaptura.get(tablero);
         }
@@ -84,14 +87,16 @@ public class AlphaBeta implements Jugador {
         if (jugador == this.jugador) {
             for (int[][] posibleTablero : posiblesTableros) {
                 v = Math.max(v, minimax(posibleTablero, profundidad - 1, alpha, beta, Tablero.jugadorOpuesto(this.jugador)));
+                expandidos++;
                 if (beta <= v) {
-                    break;
+                    return v;
                 }
                 alpha = Math.max(alpha, v);
             }
         } else {
             for (int[][] posibleTablero : posiblesTableros) {
                 v = Math.min(v, minimax(posibleTablero, profundidad - 1, alpha, beta, this.jugador));
+                expandidos++;
                 if (v <= alpha) {
                     return v;
                 }

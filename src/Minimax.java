@@ -16,6 +16,7 @@ public class Minimax implements Jugador {
     private int primerJugador;
     private int jugador;
     private int profundidad;
+    int expandidos = 0;
 
     Minimax(int jugador, int profundidad) {
         primerJugador = jugador;
@@ -46,6 +47,7 @@ public class Minimax implements Jugador {
         @SuppressWarnings("unchecked")
         HashMap<int[][], Boolean> tablerosConCaptura = (HashMap<int[][], Boolean>) resultado[2];
         boolean captura = false;
+        expandidos = 1;
 
         if (posiblesTableros.size() != 0 && estado == Tablero.JUEGO_CONTINUA) {
             int mayorValor = Integer.MIN_VALUE;
@@ -57,6 +59,7 @@ public class Minimax implements Jugador {
                     mayorValor = valorActual;
                     tablero = posibleTablero;
                 }
+                expandidos++;
             }
             captura = tablerosConCaptura.get(tablero);
         }
@@ -82,10 +85,12 @@ public class Minimax implements Jugador {
         if (jugador == this.jugador) {
             for (int[][] posibleTablero : posiblesTableros) {
                 v = Math.max(v, minimax(posibleTablero, profundidad - 1, Tablero.jugadorOpuesto(this.jugador)));
+                expandidos++;
             }
         } else {
             for (int[][] posibleTablero : posiblesTableros) {
                 v = Math.min(v, minimax(posibleTablero, profundidad - 1, this.jugador));
+                expandidos++;
             }
         }
 

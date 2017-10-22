@@ -22,7 +22,7 @@ public class RL implements Jugador {
     boolean entrenar;
     private int primerJugador;
     private int jugador;
-    private double qRate = 0.5;
+    private double qRate = 0.8;
 //    private int N = 1000;
     private int[][] ultimoTablero;
 
@@ -78,10 +78,10 @@ public class RL implements Jugador {
 
             q = Math.random();
             //entrenar
-            if (q <= qRate || !entrenar) {
+            if (q <= qRate) {
                 for (int[][] posibleTablero : posiblesTableros) {
-                    prob = calculateReward(posibleTablero);
-//                    prob = getProbability(posibleTablero);
+//                    prob = calculateReward(posibleTablero);
+                    prob = getProbability(posibleTablero);
                     if (prob > maxProb) {
                         maxProb = prob;
                         tableroCandidato = posibleTablero;
@@ -130,7 +130,8 @@ public class RL implements Jugador {
 
         //si aun no contiene la tabla, insertar con valor inicial 0.5
         if (!tablaDeBusqueda.containsKey(tableroSerializado)) {
-            tablaDeBusqueda.put(tableroSerializado, 0.5);
+//            tablaDeBusqueda.put(tableroSerializado, 0.5);
+            return 0.5;
         }
 
         if (this.jugador == Tablero.JUGADOR_NEGRO) {
@@ -142,6 +143,10 @@ public class RL implements Jugador {
     }
 
     private void updateProbability(int[][] tablero, double nextStateProb) {
+
+        if (nextStateProb == 0.5) {
+            return;
+        }
 
         double prob = getProbability(tablero);
 
