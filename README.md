@@ -1,5 +1,14 @@
 # Damas
 
+Este proyecto forma parte de una tarea de la materia Inteligencia Artificial 
+de la carrera Ingeniería en Informática de la Universidad Nacional de Asunción.
+
+El objetivo fue aplicar los métodos Minimax, Minimax con poda alfa-beta y
+Aprendizaje por refuerzo al juego de Damas, compararlos, realizar mediciones y 
+formular una conclusión. 
+
+El paper correspondiente está disponible en [Overleaf](https://www.overleaf.com/read/vvbhxcdnskph).
+
 ## Integrantes
 
 - Daniel Min
