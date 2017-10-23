@@ -7,7 +7,7 @@
 
 ## Instrucciones
 
-El proyecto se desarrollo en Ubuntu 16.04 con Java 8.
+El proyecto se desarrolló en Ubuntu 16.04 con Java 8.
 El comando para instalarlos es:
 
     sudo apt install openjdk-8-jdk
