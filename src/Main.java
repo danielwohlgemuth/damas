@@ -17,11 +17,6 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
-        int cantEntrenamientos = 100000;
-        int cantJuegos = 100;
-//        int cantExperimentos = 10;
-
         // Estadísticas
         double tiempoEntrenamiento = 0;
         double[] tiempoMetodo = new double[2];
@@ -36,14 +31,18 @@ public class Main {
 
         Jugador[] jugadores = new Jugador[2];
 
-//        jugadores[Tablero.JUGADOR_NEGRO] = new Random(Tablero.JUGADOR_NEGRO);
+        int cantEntrenamientos = 100000;
+        int cantJuegos = 100;
+
+        jugadores[Tablero.JUGADOR_NEGRO] = new Random(Tablero.JUGADOR_NEGRO);
 //        jugadores[Tablero.JUGADOR_NEGRO] = new RL(Tablero.JUGADOR_NEGRO);
 //        jugadores[Tablero.JUGADOR_NEGRO] = new Minimax(Tablero.JUGADOR_NEGRO, 2);
-        jugadores[Tablero.JUGADOR_NEGRO] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
+//        jugadores[Tablero.JUGADOR_NEGRO] = new AlphaBeta(Tablero.JUGADOR_NEGRO, 2);
+
 //        jugadores[Tablero.JUGADOR_BLANCO] = new Random(Tablero.JUGADOR_BLANCO);
-        jugadores[Tablero.JUGADOR_BLANCO] = new RL(Tablero.JUGADOR_BLANCO);
+//        jugadores[Tablero.JUGADOR_BLANCO] = new RL(Tablero.JUGADOR_BLANCO);
 //        jugadores[Tablero.JUGADOR_BLANCO] = new Minimax( Tablero.JUGADOR_BLANCO, 2);
-//        jugadores[Tablero.JUGADOR_BLANCO] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
+        jugadores[Tablero.JUGADOR_BLANCO] = new AlphaBeta(Tablero.JUGADOR_BLANCO, 2);
 
         //noinspection ConstantConditions
         if (cantEntrenamientos > 0 && (jugadores[Tablero.JUGADOR_NEGRO] instanceof RL || jugadores[Tablero.JUGADOR_BLANCO] instanceof RL)) {
@@ -172,7 +171,6 @@ public class Main {
 
             if (estado == turnoJuego) {
                 victoriasJugador0++;
-                System.out.println(Tablero.serializarTablero(tablero));
             } else if (estado == Tablero.jugadorOpuesto(turnoJuego)) {
                 perdidasJugador0++;
                 // 50-moves rule
